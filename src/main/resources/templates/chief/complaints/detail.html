@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Complaint Details</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        h2, h3 { color: #333; }
+        p { line-height: 1.6; }
+        .status { font-weight: bold; color: #4CAF50; }
+        .actions-form { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 6px; }
+        select, button { padding: 8px; margin-right: 10px; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 th:text="${complaint.title}">Complaint Title</h2>
+    <hr/>
+
+    <p><strong>Registered By:</strong> <span th:text="${complaint.department.name}">Department Name</span></p>
+    <p><strong>Complaint Type:</strong> <span th:text="${complaint.type}"></span></p>
+    <p><strong>Status:</strong> <span class="status" th:text="${complaint.status}"></span></p>
+    <p><strong>Description:</strong> <span th:text="${complaint.description}"></span></p>
+    <p><strong>Registered On:</strong> <span th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></span></p>
+
+    <div th:if="${complaint.subEngineer == null}" class="actions-form">
+        <h3>Delegate Complaint</h3>
+        <form th:action="@{/complaints/chief/delegate}" method="post">
+            <input type="hidden" name="complaintId" th:value="${complaint.id}" />
+            <label for="subEngineerId">Select Sub-Engineer:</label>
+            <select id="subEngineerId" name="subEngineerId">
+                <option th:each="se : ${subEngineers}" th:value="${se.id}" th:text="${se.name}"></option>
+            </select>
+            <button type="submit">Delegate</button>
+        </form>
+    </div>
+
+    <div th:if="${complaint.status.name() == 'INSPECTION_DONE'}" class="actions-form">
+        <h3>Report Received - Forward to Finance</h3>
+        <p><strong>Report Details:</strong> <span th:text="${complaint.report.details}"></span></p>
+        <p><strong>Inspection Date:</strong> <span th:text="${#temporals.format(complaint.report.inspectionDate, 'yyyy-MM-dd')}"></span></p>
+        <p><strong>Image:</strong></p>
+        <img th:src="${complaint.report.imagePath}" alt="Inspection Image" style="max-width: 100%; height: auto;"/>
+
+        <form th:action="@{/complaints/chief/forward-to-finance}" method="post">
+            <input type="hidden" name="complaintId" th:value="${complaint.id}" />
+            <button type="submit">Forward to Finance</button>
+        </form>
+    </div>
+
+    <p th:if="${complaint.subEngineer != null && complaint.status.name() != 'INSPECTION_DONE'}">
+        <strong>Assigned to:</strong> <span th:text="${complaint.subEngineer.name}"></span>
+    </p>
+
+</div>
+
+</body>
+</html>

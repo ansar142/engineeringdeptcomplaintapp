@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Finance Department Reports</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        img { max-width: 200px; height: auto; display: block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<h2>Reports for Financial Review</h2>
+
+<p th:if="${reports.isEmpty()}">There are no reports awaiting financial review.</p>
+
+<table th:if="${!reports.isEmpty()}">
+    <thead>
+    <tr>
+        <th>Complaint ID</th>
+        <th>Complaint Title</th>
+        <th>Report Details</th>
+        <th>Inspection Date</th>
+        <th>Submitted By</th>
+        <th>Image</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="report : ${reports}">
+        <td th:text="${report.complaint.id}"></td>
+        <td th:text="${report.complaint.title}"></td>
+        <td th:text="${report.details}"></td>
+        <td th:text="${#temporals.format(report.inspectionDate, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${report.subEngineer.name}"></td>
+        <td>
+            <img th:src="${report.imagePath}" alt="Inspection Image" />
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

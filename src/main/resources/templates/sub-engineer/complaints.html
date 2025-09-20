@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Assigned Complaints</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        a { text-decoration: none; color: #007bff; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<h2>My Assigned Complaints</h2>
+
+<p th:if="${complaints.isEmpty()}">You have no complaints assigned to you at the moment.</p>
+
+<table th:if="${!complaints.isEmpty()}">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Assigned On</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="complaint : ${complaints}">
+        <td th:text="${complaint.id}">1</td>
+        <td th:text="${complaint.title}">Faulty A/C Unit</td>
+        <td th:text="${complaint.status}">FORWARDED_TO_SUB_ENGINEER</td>
+        <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></td>
+        <td>
+            <a th:href="@{'/sub-engineer/' + ${complaint.subEngineer.id} + '/report/' + ${complaint.id}}">
+                Submit Report
+            </a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

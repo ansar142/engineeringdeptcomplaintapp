@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>VC Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .status { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h2>Vice-Chancellor Dashboard</h2>
+
+<p th:if="${complaints.isEmpty()}">No complaints have been registered.</p>
+
+<table th:if="${!complaints.isEmpty()}">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Department</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Assigned Engineer</th>
+        <th>Registered On</th>
+        <th>Report</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="complaint : ${complaints}">
+        <td th:text="${complaint.id}"></td>
+        <td th:text="${complaint.title}"></td>
+        <td th:text="${complaint.department.name}"></td>
+        <td th:text="${complaint.type}"></td>
+        <td class="status" th:text="${complaint.status}"></td>
+        <td>
+            <span th:if="${complaint.subEngineer != null}" th:text="${complaint.subEngineer.name}"></span>
+            <span th:if="${complaint.subEngineer == null}">N/A</span>
+        </td>
+        <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd')}"></td>
+        <td>
+                    <span th:if="${complaint.report != null}">
+                        <a th:href="@{/vc/complaint/{id}(id=${complaint.id})}">View Report</a>
+                    </span>
+            <span th:if="${complaint.report == null}">N/A</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
