@@ -11,4 +11,5 @@ import java.util.List;
 public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
     // Find all complaints assigned to a specific Sub-Engineer
     List<Complaint> findBySubEngineer(SubEngineer subEngineer);
+    List<Complaint> findByDepartmentId(Long departmentId);
 }

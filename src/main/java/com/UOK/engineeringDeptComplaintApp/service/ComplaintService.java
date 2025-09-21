@@ -37,6 +37,10 @@ public class ComplaintService {
         return complaint;
     }
 
+    public List<Complaint> getComplaintsByDepartmentId(Long departmentId) {
+        return complaintRepository.findByDepartmentId(departmentId);
+    }
+
     // Chief Engineer: Delegate a complaint to a Sub-Engineer
     public Complaint delegateComplaint(Long complaintId, Long subEngineerId) {
         Complaint complaint = complaintRepository.findById(complaintId)

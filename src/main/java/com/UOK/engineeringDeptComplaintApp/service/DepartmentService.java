@@ -21,4 +21,8 @@ public class DepartmentService {
     public List<Department> getAllDepartments() {
         return departmentRepository.findAll();
     }
+
+    public void saveDepartment(Department department) {
+        departmentRepository.save(department);
+    }
 }

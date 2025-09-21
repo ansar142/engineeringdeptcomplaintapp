@@ -44,6 +44,13 @@ public class ComplaintController {
         // You can add a success message or redirect to a confirmation page
         return "redirect:/complaints/success";
     }
+    @GetMapping("/department/{departmentId}")
+    public String viewDepartmentComplaints(@PathVariable Long departmentId, Model model) {
+        List<Complaint> complaints = complaintService.getComplaintsByDepartmentId(departmentId);
+        model.addAttribute("complaints", complaints);
+        // You can use the same view or create a new one, e.g., "department_complaints/list"
+        return "departments/complaints/list";
+    }
     @GetMapping("/success")
     public String showSuccessPage() {
         return "complaints/success";

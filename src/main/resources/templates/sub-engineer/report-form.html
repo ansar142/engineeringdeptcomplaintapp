@@ -2,30 +2,64 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Submit Inspection Report</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        form { background: #f4f4f4; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input, textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
-        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form div {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-
 <h2>Submit Inspection Report</h2>
-<p>Please provide details and an image of your findings.</p>
-
-<form th:action="@{/sub-engineer/submit-report}" method="post">
+<form th:action="@{/sub-engineer/submit-report}" method="post" enctype="multipart/form-data">
     <input type="hidden" name="complaintId" th:value="${complaintId}" />
 
-    <label for="reportDetails">Inspection Details:</label>
-    <textarea id="reportDetails" name="reportDetails" rows="8" required></textarea>
+    <div>
+        <label for="reportDetails">Inspection Details:</label>
+        <textarea id="reportDetails" name="reportDetails" rows="5" cols="40"></textarea>
+    </div>
 
-    <label for="imagePath">Image URL:</label>
-    <input type="text" id="imagePath" name="imagePath" placeholder="e.g., /images/report-123.jpg" required />
+    <div>
+        <label for="imageFile">Upload Image:</label>
+        <input type="file" id="imageFile" name="imageFile" />
+    </div>
 
     <button type="submit">Submit Report</button>
 </form>
-
 </body>
 </html>

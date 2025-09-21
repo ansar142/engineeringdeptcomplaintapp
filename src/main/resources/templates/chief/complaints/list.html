@@ -33,9 +33,12 @@
     <tr th:each="complaint : ${complaints}">
         <td th:text="${complaint.id}">1</td>
         <td th:text="${complaint.title}">Faulty Lab Equipment</td>
-        <td th:text="${complaint.department.name}">Electrical Engineering</td>
+        <td>
+            <span th:if="${complaint.department != null}" th:text="${complaint.department.name}">Electrical Engineering</span>
+            <span th:if="${complaint.department == null}">N/A</span>
+        </td>
         <td th:text="${complaint.status}">REGISTERED</td>
-        <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}">2025-09-21 03:00</td>
         <td>
             <a th:href="@{/complaints/chief/{id}(id=${complaint.id})}">View Details</a>
         </td>

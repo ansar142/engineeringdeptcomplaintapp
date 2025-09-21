@@ -34,19 +34,28 @@ public class SubEngineerService {
         return complaintRepository.findBySubEngineer(subEngineer);
     }
 
-    public Report submitReport(Long complaintId, String reportDetails, String imagePath) {
+    public void submitReport(Long complaintId, String reportDetails, String imagePath) {
+        // Find the existing complaint
         Complaint complaint = complaintRepository.findById(complaintId)
-                .orElseThrow(() -> new IllegalArgumentException("Complaint not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Complaint not found with ID: " + complaintId));
+
+        // Check if a report for this complaint already exists
+        if (reportRepository.findByComplaintId(complaintId).isPresent()) {
+            throw new IllegalStateException("A report for this complaint already exists.");
+        }
+
+        // Create and save the new report
         Report report = new Report();
-        report.setComplaint(complaint);
         report.setDetails(reportDetails);
         report.setImagePath(imagePath);
         report.setInspectionDate(LocalDateTime.now());
+        report.setComplaint(complaint);
         report.setSubEngineer(complaint.getSubEngineer());
+        reportRepository.save(report);
+
+        // Update the status of the existing complaint
         complaint.setStatus(ComplaintStatus.INSPECTION_DONE);
-        complaint.setReport(report);
         complaintRepository.save(complaint);
-        return reportRepository.save(report);
     }
 
     // This is the missing method.
@@ -58,4 +67,5 @@ public class SubEngineerService {
     public Optional<SubEngineer> getSubEngineerById(Long id) {
         return subEngineerRepository.findById(id);
     }
+
 }

@@ -3,6 +3,7 @@ package com.UOK.engineeringDeptComplaintApp.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ public class Complaint {
     private Long id;
     private String title;
     private String description;
+    @CreationTimestamp
     private LocalDateTime dateRegistered;
 
     @Enumerated(EnumType.STRING)
@@ -39,12 +41,5 @@ public class Complaint {
     private Report report;
 
     // Constructor for registering a new complaint
-    public Complaint(String title, String description, ComplaintType type, Department department) {
-        this.title = title;
-        this.description = description;
-        this.type = type;
-        this.department = department;
-        this.dateRegistered = LocalDateTime.now();
-        this.status = ComplaintStatus.REGISTERED;
-    }
+
 }

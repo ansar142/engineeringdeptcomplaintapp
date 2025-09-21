@@ -16,9 +16,9 @@
 
 <h2>My Assigned Complaints</h2>
 
-<p th:if="${complaints.isEmpty()}">You have no complaints assigned to you at the moment.</p>
+<p th:if="${complaints == null or complaints.isEmpty()}">You have no complaints assigned to you at the moment.</p>
 
-<table th:if="${!complaints.isEmpty()}">
+<table th:if="${complaints != null and !complaints.isEmpty()}">
     <thead>
     <tr>
         <th>ID</th>
