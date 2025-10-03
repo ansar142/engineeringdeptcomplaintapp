@@ -1,31 +1,189 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Complaint Details</title>
+    <title>Complaint Details | Chief Engineer</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        .container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-        h2, h3 { color: #333; }
-        p { line-height: 1.6; }
-        .status { font-weight: bold; color: #4CAF50; }
-        .actions-form { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 6px; }
-        select, button { padding: 8px; margin-right: 10px; }
-        button { background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        /* Professional Green/White Theme */
+        :root {
+            --primary-green: #28a745;   /* Main success/action color */
+            --light-bg: #f8f9fa;        /* Light page background */
+            --card-bg: #ffffff;         /* Main container background */
+            --text-color: #333;
+            --secondary-text: #6c757d;
+            --border-color: #dee2e6;
+            --accent-blue: #007bff;     /* For links and delegation buttons */
+            --accent-orange: #ffc107;   /* For "Forwarded to Finance" status */
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Headings and Separator */
+        h2 {
+            color: var(--primary-green);
+            font-size: 24px;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color); /* Light separator */
+        }
+
+        h3 {
+            color: var(--primary-green);
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        /* Detail Text and Structure */
+        .detail-item {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .detail-item strong {
+            color: #555;
+            min-width: 180px;
+            font-weight: 600;
+        }
+        .detail-block {
+            padding-left: 20px;
+            border-left: 3px solid var(--border-color);
+            margin-top: 15px;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 0.9em;
+            color: var(--text-color);
+            background-color: var(--border-color); /* Neutral default */
+        }
+
+        /* Thematic Status Colors (using light background for visibility) */
+        .status-badge[th:text*='REGISTERED'], .status-badge[th:text*='VIEWED_BY_CHIEF'] { background-color: #fce8a6; } /* Light yellow */
+        .status-badge[th:text*='FORWARDED_TO_SUB_ENGINEER'] { background-color: #cce5ff; } /* Light blue */
+        .status-badge[th:text*='INSPECTION_DONE'] { background-color: #d4edda; } /* Light green */
+        .status-badge[th:text*='FORWARDED_TO_FINANCE'] { background-color: #fff3cd; } /* Light orange */
+
+
+        /* Action and Report Box */
+        .card {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid var(--primary-green);
+            border-radius: 6px;
+            background-color: #f7fff8; /* Very light green shade */
+        }
+
+        select, button {
+            padding: 10px 15px;
+            margin-right: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Delegation Button */
+        .delegate-btn {
+            background-color: var(--accent-blue);
+            color: var(--card-bg);
+            border: none;
+            transition: background-color 0.2s;
+        }
+        .delegate-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Forward to Finance Button (Primary Green) */
+        .forward-btn {
+            background-color: var(--primary-green);
+            color: var(--card-bg);
+            border: none;
+            transition: background-color 0.2s;
+        }
+        .forward-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        /* File Attachments Display Styles */
+        .attachments-list {
+            margin-top: 15px;
+            padding: 10px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .attachment-item {
+            margin-top: 10px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--card-bg);
+        }
+
+        .attachment-item a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .attachment-item img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            display: block;
+        }
+        .text-info {
+            color: var(--primary-green);
+            font-weight: bold;
+            text-align: right;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2 th:text="${complaint.title}">Complaint Title</h2>
-    <hr/>
 
-    <p><strong>Registered By:</strong> <span th:text="${complaint.department.name}">Department Name</span></p>
-    <p><strong>Complaint Type:</strong> <span th:text="${complaint.type}"></span></p>
-    <p><strong>Status:</strong> <span class="status" th:text="${complaint.status}"></span></p>
-    <p><strong>Description:</strong> <span th:text="${complaint.description}"></span></p>
-    <p><strong>Registered On:</strong> <span th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></span></p>
+    <div class="detail-block">
+        <div class="detail-item">
+            <strong>Registered By:</strong> <span><span th:text="${complaint.department.name}">Department Name</span></span>
+        </div>
+        <div class="detail-item">
+            <strong>Complaint Type:</strong> <span th:text="${complaint.type}"></span>
+        </div>
+        <div class="detail-item">
+            <strong>Status:</strong> <span class="status-badge" th:text="${#strings.replace(complaint.status, '_', ' ')}"></span>
+        </div>
+        <div class="detail-item">
+            <strong>Registered On:</strong> <span th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></span>
+        </div>
+        <div class="detail-item" style="flex-direction: column;">
+            <strong>Description:</strong>
+            <p style="margin-top: 5px; color: var(--secondary-text);" th:text="${complaint.description}"></p>
+        </div>
+    </div>
 
-    <div th:if="${complaint.subEngineer == null}" class="actions-form">
+    <div th:if="${complaint.subEngineer == null}" class="card">
         <h3>Delegate Complaint</h3>
         <form th:action="@{/complaints/chief/delegate}" method="post">
             <input type="hidden" name="complaintId" th:value="${complaint.id}" />
@@ -33,25 +191,72 @@
             <select id="subEngineerId" name="subEngineerId">
                 <option th:each="se : ${subEngineers}" th:value="${se.id}" th:text="${se.name}"></option>
             </select>
-            <button type="submit">Delegate</button>
+            <button type="submit" class="delegate-btn">Delegate</button>
         </form>
     </div>
 
-    <div th:if="${complaint.status.name() == 'INSPECTION_DONE'}" class="actions-form">
-        <h3>Report Received - Forward to Finance</h3>
-        <p><strong>Report Details:</strong> <span th:text="${complaint.report.details}"></span></p>
-        <p><strong>Inspection Date:</strong> <span th:text="${#temporals.format(complaint.report.inspectionDate, 'yyyy-MM-dd')}"></span></p>
-        <p><strong>Image:</strong></p>
-        <img th:src="${complaint.report.imagePath}" alt="Inspection Image" style="max-width: 100%; height: auto;"/>
+    <div th:if="${complaint.report != null}" class="card">
+        <h3>Inspection Report</h3>
+        <div class="detail-item">
+            <strong>Inspected By:</strong> <span th:text="${complaint.subEngineer.name}"></span>
+        </div>
+        <div class="detail-item">
+            <strong>Inspection Date:</strong> <span th:text="${#temporals.format(complaint.report.inspectionDate, 'yyyy-MM-dd')}"></span>
+        </div>
+        <div class="detail-item" style="flex-direction: column;">
+            <strong>Report Details:</strong>
+            <p style="margin-top: 5px; color: var(--secondary-text);" th:text="${complaint.report.details}"></p>
+        </div>
 
-        <form th:action="@{/complaints/chief/forward-to-finance}" method="post">
+        <div>
+            <h4>File Attachments:</h4>
+            <div th:if="${complaint.report.imagePath == null || complaint.report.imagePath.isEmpty()}" class="attachments-list">
+                <p>No attachments were uploaded with this report.</p>
+            </div>
+            <div th:unless="${complaint.report.imagePath == null || complaint.report.imagePath.isEmpty()}" class="attachments-list">
+
+                <div th:each="filePath : ${#strings.arraySplit(complaint.report.imagePath, ',')}" class="attachment-item">
+
+                    <span th:with="filename=${#strings.replace(filePath, '/images/', '')},
+                                  lowerFilename=${#strings.toLowerCase(filename)}">
+
+                        <span th:with="isImage=${#strings.endsWith(lowerFilename, '.jpg') or
+                                                 #strings.endsWith(lowerFilename, '.jpeg') or
+                                                 #strings.endsWith(lowerFilename, '.png') or
+                                                 #strings.endsWith(lowerFilename, '.gif')}">
+
+                            <span th:if="${isImage}">
+                                <p><strong>Image File:</strong>
+                                    <a th:href="@{${filePath}}" th:text="${filename}">Image Filename</a>
+                                    (Click to view/download)
+                                </p>
+                                <img th:src="@{${filePath}}" alt="Inspection Image" />
+                            </span>
+
+                            <span th:unless="${isImage}">
+                                <p><strong>Document File:</strong>
+                                    <a th:href="@{${filePath}}" th:text="${filename}" download>Document Filename</a>
+                                    (Click to download)
+                                </p>
+                            </span>
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <form th:if="${complaint.status.name() == 'INSPECTION_DONE'}"
+              th:action="@{/complaints/chief/forward-to-finance}" method="post" style="margin-top: 20px; text-align: right;">
             <input type="hidden" name="complaintId" th:value="${complaint.id}" />
-            <button type="submit">Forward to Finance</button>
+            <button type="submit" class="forward-btn">Forward to Finance</button>
         </form>
+
+        <p th:if="${complaint.status.name() == 'FORWARDED_TO_FINANCE'}" class="text-info">
+            This report has been forwarded to Finance.
+        </p>
     </div>
 
-    <p th:if="${complaint.subEngineer != null && complaint.status.name() != 'INSPECTION_DONE'}">
-        <strong>Assigned to:</strong> <span th:text="${complaint.subEngineer.name}"></span>
+    <p th:if="${complaint.subEngineer != null && complaint.report == null}" style="margin-top: 25px;">
+        <strong>Assigned to:</strong> <span th:text="${complaint.subEngineer.name}"></span> (Awaiting report)
     </p>
 
 </div>

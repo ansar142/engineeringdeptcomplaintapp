@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.google.com/search?q=http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <!-- Simple CSS for the Dashboard layout -->
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        background-color: #eef2f7;
+        margin: 0;
+        padding: 0;
+        color: #333;
+        }
+        .header {
+        background-color: #004d99; /* University Blue */
+        color: white;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+        margin: 0;
+        font-size: 24px;
+        }
+        .logout-link {
+        color: white;
+        text-decoration: none;
+        padding: 8px 15px;
+        border: 1px solid white;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        }
+        .logout-link:hover {
+        background-color: #003366;
+        }
+        .container {
+        padding: 40px;
+        }
+        .card {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        }
+        .card h3 {
+        color: #004d99;
+        border-bottom: 2px solid #eef2f7;
+        padding-bottom: 10px;
+        margin-top: 0;
+        }
+        .info-box {
+        background-color: #f7f7fa;
+        padding: 15px;
+        border-left: 5px solid #004d99;
+        margin-top: 15px;
+        color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>UOK Engineering Department - Admin Dashboard</h1>
+
+    <!-- Spring Security 'sec:authentication' to display logged-in username -->
+    <div sec:authorize="isAuthenticated()">
+        Logged in as: <span sec:authentication="name">Admin User</span>
+        | <a th:href="@{/logout}" class="logout-link">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h3 th:text="${message}">Welcome Message</h3>
+        <p>This is the protected area for system administrators. From here, you can manage users, view system logs, and modify core configuration settings.</p>
+    </div>
+
+    <div class="card">
+        <h3>Administrative Functions (Links)</h3>
+        <ul>
+            <li><a href="#">Manage All Users (Admins, Chiefs, VCs, Engineers)</a></li>
+            <li><a href="#">System Configuration Settings</a></li>
+            <li><a href="#">View Complaint Statistics and Trends</a></li>
+            <li><a href="#">Review Application Logs</a></li>
+        </ul>
+    </div>
+
+    <div class="info-box">
+        <h4>Security Check</h4>
+        <p>Access to this page requires the **ROLE_ADMIN** authority, as enforced by <code>SecurityConfig.java</code>.</p>
+    </div>
+</div>
+
+</body>
+</html>

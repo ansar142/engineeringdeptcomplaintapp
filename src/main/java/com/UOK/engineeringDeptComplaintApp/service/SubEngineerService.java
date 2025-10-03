@@ -34,7 +34,8 @@ public class SubEngineerService {
         return complaintRepository.findBySubEngineer(subEngineer);
     }
 
-    public void submitReport(Long complaintId, String reportDetails, String imagePath) {
+    // KEY CHANGE: Renamed imagePath to combinedFilePaths to reflect multiple values
+    public void submitReport(Long complaintId, String reportDetails, String combinedFilePaths) {
         // Find the existing complaint
         Complaint complaint = complaintRepository.findById(complaintId)
                 .orElseThrow(() -> new IllegalArgumentException("Complaint not found with ID: " + complaintId));
@@ -47,7 +48,8 @@ public class SubEngineerService {
         // Create and save the new report
         Report report = new Report();
         report.setDetails(reportDetails);
-        report.setImagePath(imagePath);
+        // KEY CHANGE: Set the comma-separated string to the Report
+        report.setImagePath(combinedFilePaths);
         report.setInspectionDate(LocalDateTime.now());
         report.setComplaint(complaint);
         report.setSubEngineer(complaint.getSubEngineer());
@@ -67,5 +69,4 @@ public class SubEngineerService {
     public Optional<SubEngineer> getSubEngineerById(Long id) {
         return subEngineerRepository.findById(id);
     }
-
 }

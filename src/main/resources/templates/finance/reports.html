@@ -3,44 +3,134 @@
 <head>
     <title>Finance Department Reports</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        img { max-width: 200px; height: auto; display: block; margin-top: 10px; }
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px 0;
+            background-color: #e8f5e9; /* Light green background similar to the image */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* Container for the main content */
+        .container {
+            width: 90%;
+            max-width: 1200px; /* Max width for large screens */
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            border-radius: 8px; /* Rounded corners */
+            overflow: hidden; /* Ensures table content stays within the rounded container */
+            padding-bottom: 20px; /* Padding at the bottom of the container */
+        }
+
+        /* Header Styling */
+        .header {
+            background-color: #4caf50; /* A vibrant green for the header */
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        /* Report Heading */
+        h2 {
+            text-align: center;
+            color: #388e3c; /* Darker green text */
+            padding: 20px 0 10px 0;
+            font-weight: 500;
+        }
+
+        /* Table Styles */
+        table {
+            width: 95%; /* Slightly less than 100% to give padding within the container */
+            border-collapse: collapse;
+            margin: 20px auto; /* Centering the table */
+            border: 1px solid #c8e6c9; /* Light border around the table */
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0; /* Subtle horizontal line */
+        }
+
+        th {
+            background-color: #66bb6a; /* A lighter green for the table header */
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        /* Table body row styles */
+        tbody tr:hover {
+            background-color: #e8f5e9; /* Light hover effect for usability */
+            transition: background-color 0.3s;
+        }
+
+        td {
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        /* Placeholder message */
+        p {
+            text-align: center;
+            padding: 40px 20px;
+            color: #757575;
+            font-style: italic;
+        }
+
+        /* Image Styling */
+        img {
+            max-width: 150px; /* Reduced max width for better table fit */
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: block;
+        }
     </style>
 </head>
 <body>
 
-<h2>Reports for Financial Review</h2>
+<div class="container">
+    <div class="header">
+        Financial Review Dashboard
+    </div>
 
-<p th:if="${reports.isEmpty()}">There are no reports awaiting financial review.</p>
+    <h2>Reports Awaiting Financial Review</h2>
 
-<table th:if="${!reports.isEmpty()}">
-    <thead>
-    <tr>
-        <th>Complaint ID</th>
-        <th>Complaint Title</th>
-        <th>Report Details</th>
-        <th>Inspection Date</th>
-        <th>Submitted By</th>
-        <th>Image</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="report : ${reports}">
-        <td th:text="${report.complaint.id}"></td>
-        <td th:text="${report.complaint.title}"></td>
-        <td th:text="${report.details}"></td>
-        <td th:text="${#temporals.format(report.inspectionDate, 'yyyy-MM-dd HH:mm')}"></td>
-        <td th:text="${report.subEngineer.name}"></td>
-        <td>
-            <img th:src="${report.imagePath}" alt="Inspection Image" />
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <p th:if="${reports.isEmpty()}">There are no reports awaiting financial review.</p>
+
+    <table th:if="${!reports.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Complaint ID</th>
+            <th>Complaint Title</th>
+            <th>Report Details</th>
+            <th>Inspection Date</th>
+            <th>Submitted By</th>
+            <th>Image</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="report : ${reports}">
+            <td th:text="${report.complaint.id}"></td>
+            <td th:text="${report.complaint.title}"></td>
+            <td th:text="${report.details}"></td>
+            <td th:text="${#temporals.format(report.inspectionDate, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${report.subEngineer.name}"></td>
+            <td>
+                <img th:src="${report.imagePath}" alt="Inspection Image" />
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
 </body>
 </html>

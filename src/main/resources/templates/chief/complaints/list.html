@@ -3,48 +3,148 @@
 <head>
     <title>Chief Engineer Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        a { text-decoration: none; color: #007bff; }
-        a:hover { text-decoration: underline; }
+        /* Professional Green/White Theme Variables */
+        :root {
+            --primary-green: #28a745;
+            --light-green: #f7fff8;      /* Very light green background for container */
+            --dark-green: #1e7e34;
+            --light-bg: #e6ffe9;        /* Light page background */
+            --text-color: #333;
+            --white: #ffffff;
+            --border-color: #ced4da;
+            --secondary-bg: #f2f2f2;    /* For alternate row color */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1200px; /* Wider container for the comprehensive table */
+            margin: 0 auto;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--primary-green);
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background-color: var(--white);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Table Header (Green theme) */
+        thead tr {
+            background-color: var(--primary-green);
+            color: white;
+            font-weight: 600;
+        }
+
+        th:first-child { border-top-left-radius: 8px; }
+        th:last-child { border-top-right-radius: 8px; }
+
+        /* Table Body Rows */
+        tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:last-child td {
+             border-bottom: none;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--secondary-bg);
+        }
+
+        tbody tr:hover {
+            background-color: #e9f5ed; /* Light green hover effect */
+        }
+
+        /* Action Link Styling */
+        a {
+            text-decoration: none;
+            color: var(--primary-green);
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: var(--dark-green);
+        }
+
+        p.empty-message {
+            color: #555;
+            text-align: center;
+            padding: 20px;
+            background-color: var(--light-green);
+            border-radius: 6px;
+            border: 1px solid var(--primary-green);
+        }
     </style>
 </head>
 <body>
 
-<h2>Chief Engineer Dashboard: All Complaints</h2>
+<div class="container">
+    <h2>Chief Engineer Dashboard: All Complaints</h2>
 
-<p th:if="${complaints.isEmpty()}">No complaints have been registered yet.</p>
+    <p th:if="${complaints.isEmpty()}" class="empty-message">No complaints have been registered yet.</p>
 
-<table th:if="${!complaints.isEmpty()}">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Department</th>
-        <th>Status</th>
-        <th>Registered On</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="complaint : ${complaints}">
-        <td th:text="${complaint.id}">1</td>
-        <td th:text="${complaint.title}">Faulty Lab Equipment</td>
-        <td>
-            <span th:if="${complaint.department != null}" th:text="${complaint.department.name}">Electrical Engineering</span>
-            <span th:if="${complaint.department == null}">N/A</span>
-        </td>
-        <td th:text="${complaint.status}">REGISTERED</td>
-        <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}">2025-09-21 03:00</td>
-        <td>
-            <a th:href="@{/complaints/chief/{id}(id=${complaint.id})}">View Details</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <table th:if="${!complaints.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>Registered On</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="complaint : ${complaints}">
+            <td th:text="${complaint.id}">1</td>
+            <td th:text="${complaint.title}">Faulty Lab Equipment</td>
+            <td>
+                <!-- Ensure Department name is displayed clearly -->
+                <span th:if="${complaint.department != null}" th:text="${complaint.department.name}">Electrical Engineering</span>
+                <span th:if="${complaint.department == null}">N/A</span>
+            </td>
+            <!-- FIX: Replaces underscores with spaces for readability -->
+            <td th:text="${#strings.replace(complaint.status, '_', ' ')}">REGISTERED</td>
+            <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}">2025-09-21 03:00</td>
+            <td>
+                <a th:href="@{/complaints/chief/{id}(id=${complaint.id})}">View Details</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
 </body>
 </html>

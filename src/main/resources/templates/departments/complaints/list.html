@@ -3,90 +3,141 @@
 <head>
     <title>Department Complaints</title>
     <style>
+        /* Professional Green/White Theme Variables */
+        :root {
+            --primary-green: #28a745;
+            --light-green: #f7fff8;      /* Very light green background for container */
+            --dark-green: #1e7e34;
+            --light-bg: #e6ffe9;        /* Light page background */
+            --text-color: #333;
+            --white: #ffffff;
+            --border-color: #ced4da;
+            --secondary-bg: #f2f2f2;    /* For alternate row color */
+            --link-color: #007bff;      /* Keeping a standard link color for contrast, though green is used for header */
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f4f4f4; /* Added a light background for better visual separation */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1000px; /* Wider container for the table */
+            margin: 0 auto;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
-            color: #333;
-            border-bottom: 2px solid #007bff;
+            color: var(--primary-green);
+            border-bottom: 2px solid var(--primary-green);
             padding-bottom: 10px;
+            margin-bottom: 25px;
+            text-align: center;
         }
 
+        /* Table Styling */
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate; /* Use separate for rounded corners */
+            border-spacing: 0;
             margin-top: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Added subtle shadow for depth */
-            background-color: #fff;
+            border-radius: 8px; /* Rounded corners for the table */
+            overflow: hidden; /* Ensures borders/shadows respect radius */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background-color: var(--white);
         }
 
         th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
+            padding: 15px;
             text-align: left;
+            border-bottom: 1px solid var(--border-color); /* Light border */
         }
 
-        th {
-            background-color: #007bff; /* Changed header background color */
-            color: white; /* Changed header text color */
-            font-weight: bold;
+        /* Table Header (Green theme) */
+        thead tr {
+            background-color: var(--primary-green);
+            color: white;
         }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
+        th:first-child { border-top-left-radius: 8px; }
+        th:last-child { border-top-right-radius: 8px; }
+
+        /* Table Body Rows */
+        tbody tr {
+            transition: background-color 0.2s ease;
         }
 
-        tr:hover {
-            background-color: #e9ecef; /* Added hover effect for rows */
+        tbody tr:last-child td {
+             border-bottom: none; /* Remove bottom border on last row */
         }
 
+        tbody tr:nth-child(even) {
+            background-color: var(--secondary-bg);
+        }
+
+        tbody tr:hover {
+            background-color: #e9f5ed; /* Light green hover effect */
+        }
+
+        /* Action Link Styling */
         a {
             text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
+            color: var(--primary-green); /* Link color matches primary theme */
+            font-weight: 600;
+            transition: color 0.2s;
         }
 
         a:hover {
             text-decoration: underline;
-            color: #0056b3;
+            color: var(--dark-green);
         }
 
-        p {
+        p.empty-message {
             color: #555;
+            text-align: center;
+            padding: 20px;
+            background-color: var(--light-green);
+            border-radius: 6px;
+            border: 1px solid var(--primary-green);
         }
     </style>
 </head>
 <body>
 
-<h2>Department Complaints</h2>
+<div class="container">
+    <h2>Department Complaints</h2>
 
-<p th:if="${complaints.isEmpty()}">No complaints have been registered for this department.</p>
+    <p th:if="${complaints.isEmpty()}" class="empty-message">No complaints have been registered for this department.</p>
 
-<table th:if="${!complaints.isEmpty()}">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Status</th>
-        <th>Registered On</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="complaint : ${complaints}">
-        <td th:text="${complaint.id}">1</td>
-        <td th:text="${complaint.title}">Faulty Lab Equipment</td>
-        <td th:text="${complaint.status}">REGISTERED</td>
-        <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></td>
-        <td>
-            <a th:href="@{/complaints/department/detail/{id}(id=${complaint.id})}">View Details</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <table th:if="${!complaints.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Registered On</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="complaint : ${complaints}">
+            <td th:text="${complaint.id}">1</td>
+            <td th:text="${complaint.title}">Faulty Lab Equipment</td>
+            <td th:text="${complaint.status}">REGISTERED</td>
+            <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <a th:href="@{/complaints/department/detail/{id}(id=${complaint.id})}">View Details</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
 </body>
 </html>

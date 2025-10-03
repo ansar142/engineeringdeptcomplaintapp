@@ -4,62 +4,319 @@
     <title>Submit Inspection Report</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
+        /* CSS for green/white theme remains the same as before */
+        :root {
+            --primary-green: #28a745;
+            --light-green: #e6ffe9;
+            --dark-green: #1e7e34;
+            --text-color: #333;
+            --white: #ffffff;
+            --border-color: #ced4da;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-green);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px;
         }
+
         .container {
-            width: 50%;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+
+        h2 {
+            color: var(--primary-green);
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
         form div {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
+
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-green);
         }
-        textarea, input[type="file"] {
+
+        textarea {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: border-color 0.3s;
+            resize: vertical; /* Allow vertical resizing only */
         }
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
+
+        textarea:focus {
+            border-color: var(--primary-green);
+            outline: none;
+        }
+
+        /* Custom File Input Styling */
+        .file-upload-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            background-color: var(--light-green);
+            transition: border-color 0.3s;
+        }
+
+        .file-upload-header {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .file-input-button {
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 8px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .file-input-button:hover {
+            background-color: var(--dark-green);
+        }
+
+        /* The plus symbol effect */
+        .file-input-button::before {
+            content: '+';
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+
+        .hidden-file-input {
+            /* Keep it hidden and functional */
+            display: none; /* Hide the native input completely, rely on button click */
+        }
+
+        .selected-files-display {
+            padding-top: 5px;
+            border-top: 1px dashed var(--border-color);
+            margin-top: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 20px;
+            align-items: center;
+            font-size: 0.9em;
+        }
+
+        /* New style for placeholder text */
+        .selected-files-display .placeholder-text {
+             color: var(--secondary-text);
+             font-style: italic;
+        }
+
+        .selected-files-display .file-name {
+            background-color: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Fix for Red Cross Visibility and Clickability */
+        .file-name .remove-btn {
+            cursor: pointer;
+            color: red;
+            font-weight: bold;
+            font-size: 1.1em;
+            line-height: 1;
+            /* Ensure the button is visually distinct and not covered */
+            background: none;
+            border: none;
+            padding: 0;
+            margin-left: 5px;
+            user-select: none; /* Prevent text selection on quick double click */
+        }
+
+        .submit-button {
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            background-color: var(--dark-green);
         }
     </style>
 </head>
 <body>
-<h2>Submit Inspection Report</h2>
-<form th:action="@{/sub-engineer/submit-report}" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="complaintId" th:value="${complaintId}" />
+<div class="container">
+    <h2>Submit Inspection Report</h2>
+    <form id="reportForm" th:action="@{/sub-engineer/submit-report}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="complaintId" th:value="${complaintId}" />
 
-    <div>
-        <label for="reportDetails">Inspection Details:</label>
-        <textarea id="reportDetails" name="reportDetails" rows="5" cols="40"></textarea>
-    </div>
+        <div>
+            <label for="reportDetails">Inspection Details:</label>
+            <textarea id="reportDetails" name="reportDetails" rows="8" placeholder="Enter detailed inspection findings and suggested actions..."></textarea>
+        </div>
 
-    <div>
-        <label for="imageFile">Upload Image:</label>
-        <input type="file" id="imageFile" name="imageFile" />
-    </div>
+        <div>
+            <label>Upload Images/PDFs (Multiple Files Allowed):</label>
+            <div class="file-upload-wrapper">
+                <div class="file-upload-header">
+                    <input type="file" id="files" name="files" multiple accept="image/*, application/pdf" style="display: none;" />
 
-    <button type="submit">Submit Report</button>
-</form>
+                    <button type="button" class="file-input-button" id="chooseFilesBtn">
+                        Choose Files
+                    </button>
+
+                    <span id="fileStatus">No files selected.</span>
+                </div>
+
+                <div id="selectedFiles" class="selected-files-display">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-button">Submit Final Report</button>
+    </form>
+</div>
+
+<script>
+    // Global array to store accumulated File objects
+    let selectedFileArray = [];
+    const fileInput = document.getElementById('files');
+    const chooseFilesBtn = document.getElementById('chooseFilesBtn');
+    const selectedFilesDisplay = document.getElementById('selectedFiles');
+    const fileStatus = document.getElementById('fileStatus');
+    const reportForm = document.getElementById('reportForm');
+
+    // Attach click listener to the custom button to trigger the hidden file input
+    chooseFilesBtn.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Function to handle file removal
+    function removeFile(indexToRemove) {
+        // Use splice to remove 1 element at the specified index
+        selectedFileArray.splice(indexToRemove, 1);
+        renderFileList(); // Re-render the list immediately
+    }
+
+    // Function to render the list of files and update the status
+    function renderFileList() {
+        selectedFilesDisplay.innerHTML = ''; // Clear display
+
+        if (selectedFileArray.length > 0) {
+            fileStatus.textContent = `${selectedFileArray.length} files total. Click again to add more.`;
+
+            selectedFileArray.forEach((file, index) => {
+                const fileNameSpan = document.createElement('span');
+                fileNameSpan.classList.add('file-name');
+
+                // Use a standard button for removal (more clickable area)
+                // We use data-file-index to link the button to the file index
+                fileNameSpan.innerHTML = `
+                    <span>${file.name}</span>
+                    <button type="button" class="remove-btn" data-file-index="${index}">&times;</button>
+                `;
+                selectedFilesDisplay.appendChild(fileNameSpan);
+            });
+        } else {
+            fileStatus.textContent = 'No files selected.';
+            // Add a friendly placeholder message
+            const placeholder = document.createElement('span');
+            placeholder.classList.add('placeholder-text');
+            placeholder.textContent = 'Use the Choose Files button to upload images or PDFs.';
+            selectedFilesDisplay.appendChild(placeholder);
+        }
+    }
+
+    // Event listener for when user selects files (Accumulation Logic)
+    fileInput.addEventListener('change', function() {
+        // Get the newly selected files from the input
+        const newlySelectedFiles = Array.from(this.files);
+
+        // Add the new files to the global array
+        selectedFileArray.push(...newlySelectedFiles);
+
+        // Re-render the file list
+        renderFileList();
+
+        // CRITICAL: Reset the input's files property to allow re-selection
+        this.value = null;
+    });
+
+    // CRITICAL FIX: Event Delegation for removing files
+    // Listen for clicks on the parent container (selectedFilesDisplay)
+    selectedFilesDisplay.addEventListener('click', function(event) {
+        const target = event.target;
+
+        // 1. Check if the clicked element has the class 'remove-btn'
+        if (target.classList.contains('remove-btn')) {
+            // Prevent default button behavior and stop event propagation
+            event.preventDefault();
+            event.stopPropagation();
+
+            // 2. Get the index from the data attribute and convert it to an integer
+            const indexToRemove = parseInt(target.getAttribute('data-file-index'));
+
+            // 3. Ensure the index is valid before removal
+            if (!isNaN(indexToRemove)) {
+                removeFile(indexToRemove);
+            }
+        }
+    });
+
+
+    // CRITICAL: Event listener for form submission
+    reportForm.addEventListener('submit', function(event) {
+        // This ensures that even if the input is hidden, the browser still sends the correct files.
+        const dataTransfer = new DataTransfer();
+
+        selectedFileArray.forEach(file => {
+            dataTransfer.items.add(file);
+        });
+
+        // Set the files property of the original file input with the accumulated list
+        fileInput.files = dataTransfer.files;
+
+        // The form will now submit the files array correctly via the fileInput element!
+    });
+
+    // Initial render
+    renderFileList();
+</script>
 </body>
 </html>

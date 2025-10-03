@@ -8,11 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList; // Added
 import java.util.List;
 
 @Controller
@@ -52,12 +52,19 @@ public class SubEngineerController {
     @PostMapping("/submit-report")
     public String submitReport(@RequestParam("complaintId") Long complaintId,
                                @RequestParam("reportDetails") String reportDetails,
-                               @RequestParam("imageFile") MultipartFile imageFile) {
-        String imagePath = null;
-        if (!imageFile.isEmpty()) {
+                               // KEY CHANGE: Accepts a list of files with the name "files"
+                               @RequestParam("files") List<MultipartFile> files) {
+
+        List<String> filePaths = new ArrayList<>();
+        String uploadDirectory = System.getProperty("user.dir") + "/src/main/resources/static/images/";
+
+        // 1. Process all uploaded files
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) {
+                continue; // Skip empty file entries
+            }
+
             try {
-                // Get the project's root directory and define the static images path
-                String uploadDirectory = System.getProperty("user.dir") + "/src/main/resources/static/images/";
                 Path uploadPath = Paths.get(uploadDirectory);
 
                 // Create the directory if it doesn't exist
@@ -65,26 +72,29 @@ public class SubEngineerController {
                     Files.createDirectories(uploadPath);
                 }
 
-                // Get the file name and create a unique file name to prevent overwrites
-                String fileName = imageFile.getOriginalFilename();
-                Path destPath = Paths.get(uploadDirectory + fileName);
+                // Create a unique file name to prevent overwrites
+                String originalFileName = file.getOriginalFilename();
+                // Replace special characters and prepend timestamp for uniqueness
+                String uniqueFileName = System.currentTimeMillis() + "_" + originalFileName.replaceAll("[^a-zA-Z0-9.\\-]", "_");
+
+                Path destPath = Paths.get(uploadDirectory + uniqueFileName);
 
                 // Save the file to the local directory
-                imageFile.transferTo(destPath.toFile());
-                imagePath = "/images/" + fileName;
+                file.transferTo(destPath.toFile());
+                filePaths.add("/images/" + uniqueFileName);
 
             } catch (IOException e) {
-                // Handle file-related exceptions
                 e.printStackTrace();
-                // Add an error message to the model for the view
-                // For now, redirect to a simple error page
-                return "redirect:/sub-engineer/error";
+                return "redirect:/sub-engineer/error"; // Handle file save error
             }
         }
 
+        // 2. Combine paths into a single string for the Report model
+        String combinedFilePaths = String.join(",", filePaths);
+
         try {
-            // Save the report with the image path
-            subEngineerService.submitReport(complaintId, reportDetails, imagePath);
+            // Call the updated service method with the combined file paths
+            subEngineerService.submitReport(complaintId, reportDetails, combinedFilePaths);
             return "redirect:/sub-engineer/success";
         } catch (Exception e) {
             e.printStackTrace();

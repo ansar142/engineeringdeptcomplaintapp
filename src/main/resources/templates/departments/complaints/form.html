@@ -3,39 +3,129 @@
 <head>
     <title>Register Complaint</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        form { background: #f4f4f4; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
-        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; }
-        h2 { text-align: center; }
+        /* Professional Green/White Theme */
+        :root {
+            --primary-green: #28a745;   /* Main success/action color */
+            --light-green: #f7fff8;      /* Very light green background for container */
+            --dark-green: #1e7e34;      /* Hover/darker green */
+            --light-bg: #e6ffe9;        /* Light page background (from report form) */
+            --text-color: #333;
+            --white: #ffffff;
+            --border-color: #ced4da;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--primary-green);
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        form div {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary-green);
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical; /* Allow vertical resizing only */
+        }
+
+        .submit-button {
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            background-color: var(--dark-green);
+        }
     </style>
 </head>
 <body>
 
-<h2>Register a New Complaint</h2>
+<div class="container">
+    <h2>Register a New Complaint</h2>
 
-<form th:action="@{/complaints/register}" th:object="${complaint}" method="post">
+    <form th:action="@{/complaints/register}" th:object="${complaint}" method="post">
 
-    <label for="department">Department:</label>
-    <select id="department" th:field="*{department}">
-        <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option>
-    </select>
+        <div>
+            <label for="department">Department:</label>
+            <select id="department" th:field="*{department}">
+                <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option>
+            </select>
+        </div>
 
-    <label for="title">Complaint Title:</label>
-    <input type="text" id="title" th:field="*{title}" required />
+        <div>
+            <label for="title">Complaint Title:</label>
+            <input type="text" id="title" th:field="*{title}" required placeholder="e.g., Leaking water pipe in Block A" />
+        </div>
 
-    <label for="description">Description:</label>
-    <textarea id="description" th:field="*{description}" rows="5" required></textarea>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" th:field="*{description}" rows="5" required placeholder="Provide detailed information about the issue..."></textarea>
+        </div>
 
-    <label for="type">Complaint Type:</label>
-    <select id="type" th:field="*{type}">
-        <option th:each="type : ${T(com.UOK.engineeringDeptComplaintApp.model.ComplaintType).values()}"
-                th:value="${type}" th:text="${type}"></option>
-    </select>
+        <div>
+            <label for="type">Complaint Type:</label>
+            <select id="type" th:field="*{type}">
+                <option th:each="type : ${T(com.UOK.engineeringDeptComplaintApp.model.ComplaintType).values()}"
+                        th:value="${type}" th:text="${type}"></option>
+            </select>
+        </div>
 
-    <button type="submit">Submit Complaint</button>
-</form>
+        <button type="submit" class="submit-button">Submit Complaint</button>
+    </form>
+</div>
 
 </body>
 </html>
