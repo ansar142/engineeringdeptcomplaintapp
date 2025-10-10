@@ -1,5 +1,6 @@
 package com.UOK.engineeringDeptComplaintApp.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import com.UOK.engineeringDeptComplaintApp.model.Complaint;
 import com.UOK.engineeringDeptComplaintApp.model.ComplaintStatus;
 import com.UOK.engineeringDeptComplaintApp.model.Report;
@@ -34,39 +35,69 @@ public class SubEngineerService {
         return complaintRepository.findBySubEngineer(subEngineer);
     }
 
-    // KEY CHANGE: Renamed imagePath to combinedFilePaths to reflect multiple values
     public void submitReport(Long complaintId, String reportDetails, String combinedFilePaths) {
-        // Find the existing complaint
         Complaint complaint = complaintRepository.findById(complaintId)
                 .orElseThrow(() -> new IllegalArgumentException("Complaint not found with ID: " + complaintId));
 
-        // Check if a report for this complaint already exists
         if (reportRepository.findByComplaintId(complaintId).isPresent()) {
             throw new IllegalStateException("A report for this complaint already exists.");
         }
 
-        // Create and save the new report
         Report report = new Report();
         report.setDetails(reportDetails);
-        // KEY CHANGE: Set the comma-separated string to the Report
         report.setImagePath(combinedFilePaths);
         report.setInspectionDate(LocalDateTime.now());
         report.setComplaint(complaint);
         report.setSubEngineer(complaint.getSubEngineer());
         reportRepository.save(report);
 
-        // Update the status of the existing complaint
         complaint.setStatus(ComplaintStatus.INSPECTION_DONE);
         complaintRepository.save(complaint);
     }
 
-    // This is the missing method.
     public List<SubEngineer> getAllSubEngineers() {
         return subEngineerRepository.findAll();
     }
 
-    // A method to find a sub-engineer by ID, needed for other services.
+
+    @Transactional
+    public void deleteSubEngineer(Long id) {
+        // Get the sub-engineer
+        SubEngineer subEngineer = subEngineerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Sub-Engineer not found"));
+
+        // 1. Handle reports first - set subEngineer to null
+        List<Report> reports = reportRepository.findBySubEngineerId(id);
+        for (Report report : reports) {
+            report.setSubEngineer(null);
+            reportRepository.save(report);
+        }
+
+        // 2. Handle complaints - set subEngineer to null and update status
+        List<Complaint> complaints = complaintRepository.findBySubEngineerId(id);
+        for (Complaint complaint : complaints) {
+            complaint.setSubEngineer(null);
+            // If complaint has report, keep status as INSPECTION_DONE, otherwise reset
+            if (complaint.getReport() == null) {
+                complaint.setStatus(ComplaintStatus.VIEWED_BY_CHIEF);
+            }
+            complaintRepository.save(complaint);
+        }
+
+        // 3. Clear the sub-engineer's collection
+        subEngineer.getAssignedComplaints().clear();
+
+        // 4. Delete the sub-engineer
+        subEngineerRepository.delete(subEngineer);
+    }
+
+
     public Optional<SubEngineer> getSubEngineerById(Long id) {
         return subEngineerRepository.findById(id);
+    }
+
+    // Add this method to fix the error
+    public SubEngineer saveSubEngineer(SubEngineer subEngineer) {
+        return subEngineerRepository.save(subEngineer);
     }
 }

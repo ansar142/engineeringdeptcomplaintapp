@@ -20,6 +20,31 @@
             color: var(--text-color);
             margin: 0;
             padding: 40px;
+            position: relative;
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .logout-button {
+            background-color: #dc3545;
+            color: var(--white);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
         }
 
         .container {
@@ -29,6 +54,7 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
 
         h2 {
@@ -72,6 +98,12 @@
             resize: vertical; /* Allow vertical resizing only */
         }
 
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
         .submit-button {
             background-color: var(--primary-green);
             color: var(--white);
@@ -81,17 +113,47 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
-            width: 100%;
+            flex: 2;
             transition: background-color 0.3s;
-            margin-top: 10px;
         }
 
         .submit-button:hover {
             background-color: var(--dark-green);
         }
+
+        .view-button {
+            background-color: #6c757d;
+            color: var(--white);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            flex: 1;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .view-button:hover {
+            background-color: #545b62;
+        }
+
+        .view-button:disabled {
+            background-color: #a0a4a8;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body>
+
+<!-- Logout Button at Top Right Corner -->
+<div class="header">
+    <a th:href="@{/logout}" class="logout-button">Logout</a>
+</div>
 
 <div class="container">
     <h2>Register a New Complaint</h2>
@@ -100,8 +162,12 @@
 
         <div>
             <label for="department">Department:</label>
-            <select id="department" th:field="*{department}">
-                <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option>
+            <select id="department" th:field="*{department}" onchange="updateViewButton()">
+                <option value="">Select Department</option>
+                <option th:each="dept : ${departments}"
+                        th:value="${dept.id}"
+                        th:text="${dept.name}"
+                        th:attr="data-dept-id=${dept.id}"></option>
             </select>
         </div>
 
@@ -123,9 +189,38 @@
             </select>
         </div>
 
-        <button type="submit" class="submit-button">Submit Complaint</button>
+        <div class="button-group">
+            <button type="submit" class="submit-button">Submit Complaint</button>
+            <a id="viewComplaintsBtn" class="view-button" style="display: none;">
+                View Previous Complaints
+            </a>
+        </div>
     </form>
 </div>
+
+<script>
+    function updateViewButton() {
+        const departmentSelect = document.getElementById('department');
+        const viewButton = document.getElementById('viewComplaintsBtn');
+        const selectedDepartmentId = departmentSelect.value;
+
+        if (selectedDepartmentId && selectedDepartmentId !== '') {
+            // Enable and show the button with the correct department ID
+            viewButton.href = '/complaints/department/' + selectedDepartmentId;
+            viewButton.style.display = 'inline-block';
+            viewButton.removeAttribute('disabled');
+        } else {
+            // Hide or disable the button if no department is selected
+            viewButton.style.display = 'none';
+            viewButton.setAttribute('disabled', 'true');
+        }
+    }
+
+    // Initialize the button state on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateViewButton();
+    });
+</script>
 
 </body>
 </html>

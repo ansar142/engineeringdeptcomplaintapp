@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Admin Dashboard</title>
+    <title>VC Dashboard</title>
     <style>
         :root {
             --primary-green: #28a745;
@@ -57,6 +57,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
+            margin-bottom: 30px;
         }
 
         .nav-card {
@@ -82,53 +83,96 @@
             color: var(--primary-green);
             margin-bottom: 10px;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-green);
+            color: white;
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: #e9f5ed;
+        }
     </style>
 </head>
 <body>
 <div class="dashboard-container">
-    <h1>Admin Dashboard</h1>
+    <h1>Vice Chancellor Dashboard</h1>
 
     <div class="stats-grid">
         <div class="stat-card">
-            <h3>Total Users</h3>
-            <div class="stat-number" th:text="${userCount}">0</div>
+            <h3>Total Complaints</h3>
+            <div class="stat-number" th:text="${totalComplaints}">0</div>
         </div>
         <div class="stat-card">
-            <h3>Departments</h3>
-            <div class="stat-number" th:text="${departmentCount}">0</div>
+            <h3>Pending Complaints</h3>
+            <div class="stat-number" th:text="${pendingComplaints}">0</div>
         </div>
         <div class="stat-card">
-            <h3>Sub-Engineers</h3>
-            <div class="stat-number" th:text="${subEngineerCount}">0</div>
-        </div>
-        <div class="stat-card">
-            <h3>Active Complaints</h3>
-            <div class="stat-number" th:text="${activeComplaintCount}">0</div>
+            <h3>Completed Complaints</h3>
+            <div class="stat-number" th:text="${completedComplaints}">0</div>
         </div>
     </div>
 
     <div class="nav-grid">
-        <a th:href="@{/admin/departments}" class="nav-card">
-            <h3>Department Management</h3>
-            <p>Manage departments and their configurations</p>
+        <a href="/vc/complaints" class="nav-card">
+            <h3>View All Complaints</h3>
+            <p>Browse all complaints in the system</p>
         </a>
-        <a th:href="@{/admin/sub-engineers}" class="nav-card">
-            <h3>Sub-Engineer Management</h3>
-            <p>Manage sub-engineers and their specializations</p>
-        </a>
-        <a th:href="@{/admin/complaints}" class="nav-card">
-            <h3>Complaint Management</h3>
-            <p>View and assign complaints to sub-engineers</p>
-        </a>
-        <a th:href="@{/admin/user-roles}" class="nav-card">
-            <h3>User Roles & Permissions</h3>
-            <p>Manage user access levels and permissions</p>
-        </a>
-        <a th:href="@{/admin/reports}" class="nav-card">
-            <h3>System Reports</h3>
-            <p>View system statistics and analytics</p>
+        <a href="/vc/complaint/reports" class="nav-card">
+            <h3>Complaint Reports</h3>
+            <p>View detailed complaint reports</p>
         </a>
     </div>
+
+    <h2>Recent Complaints</h2>
+    <table th:if="${!complaints.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>Registered On</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="complaint : ${complaints}">
+            <td th:text="${complaint.id}"></td>
+            <td th:text="${complaint.title}"></td>
+            <td>
+                <span th:if="${complaint.department != null}" th:text="${complaint.department.name}"></span>
+                <span th:if="${complaint.department == null}">N/A</span>
+            </td>
+            <td th:text="${#strings.replace(complaint.status, '_', ' ')}"></td>
+            <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <a th:href="@{/vc/complaint/{id}(id=${complaint.id})}">View Details</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p th:if="${complaints.isEmpty()}" style="text-align: center; padding: 20px; color: #666;">
+        No complaints found in the system.
+    </p>
 </div>
 </body>
 </html>

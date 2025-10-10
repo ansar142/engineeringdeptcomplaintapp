@@ -1,47 +1,210 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>My Assigned Complaints</title>
+    <title>My Assigned Complaints - Sub Engineer</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        a { text-decoration: none; color: #007bff; }
-        a:hover { text-decoration: underline; }
+        /* Professional Theme Variables (Matching Chief Dashboard Style) */
+        :root {
+            --primary-green: #28a745;
+            --light-green: #e9f5ed;
+            --dark-green: #1e7e34;
+            --light-bg: #f0f4f8; /* Soft background */
+            --white: #ffffff;
+            --text-color: #333;
+            --header-color: #004d40; /* Darker header color */
+            --border-color: #ced4da;
+            --action-blue: #007bff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--header-color);
+            text-align: center;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* Message Box for success/empty state */
+        .message {
+            background-color: var(--light-green);
+            color: var(--dark-green);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--primary-green);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        thead th {
+            background-color: var(--primary-green);
+            color: var(--white);
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 15px 12px;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--dark-green);
+        }
+
+        tbody tr {
+            background-color: var(--white);
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f7f7f7;
+        }
+
+        tbody tr:hover {
+            background-color: #eef2f7;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            color: var(--text-color);
+            vertical-align: middle;
+        }
+
+        /* Action Link Styling */
+        .action-link {
+            color: var(--action-blue);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .action-link.report {
+            color: var(--primary-green);
+            border: 1px solid var(--primary-green);
+        }
+        .action-link.report:hover {
+            background-color: var(--primary-green);
+            color: var(--white);
+        }
+
+        .action-link.disabled {
+            color: #777;
+            pointer-events: none;
+            cursor: default;
+            font-style: italic;
+            border: 1px solid #ccc;
+            background-color: #eee;
+        }
+
+        /* Status Pills */
+        .status-pill {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Specific Status Colors */
+        .status-pill.registered, .status-pill.viewed_by_chief { background-color: #ffebcc; color: #cc8400; }
+        .status-pill.forwarded_to_sub_engineer { background-color: #e0f7fa; color: #00bcd4; }
+        .status-pill.inspection_done { background-color: #c8e6c9; color: var(--dark-green); }
+        .status-pill.forwarded_to_finance { background-color: #ffe0b2; color: #ff9800; }
+
+        /* Helper function to replace underscores with spaces */
+        .status-text { text-transform: capitalize; }
     </style>
 </head>
 <body>
 
-<h2>My Assigned Complaints</h2>
+<div class="container">
+    <h2>Sub-Engineer Dashboard: My Assigned Complaints</h2>
 
-<p th:if="${complaints == null or complaints.isEmpty()}">You have no complaints assigned to you at the moment.</p>
+    <!-- Success Message -->
+    <div th:if="${param.success}" class="message">
+        <span th:if="${param.success[0] == 'reportSubmitted'}">
+            ✅ Inspection report submitted successfully and complaint status updated!
+        </span>
+    </div>
 
-<table th:if="${complaints != null and !complaints.isEmpty()}">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Status</th>
-        <th>Assigned On</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="complaint : ${complaints}">
-        <td th:text="${complaint.id}">1</td>
-        <td th:text="${complaint.title}">Faulty A/C Unit</td>
-        <td th:text="${complaint.status}">FORWARDED_TO_SUB_ENGINEER</td>
-        <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></td>
-        <td>
-            <a th:href="@{'/sub-engineer/' + ${complaint.subEngineer.id} + '/report/' + ${complaint.id}}">
-                Submit Report
-            </a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <p th:if="${complaints == null or complaints.isEmpty()}" class="message">
+        You have no complaints assigned to you at the moment. Excellent work!
+    </p>
+
+    <table th:if="${complaints != null and !complaints.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Registered On</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="complaint : ${complaints}">
+            <td th:text="${complaint.id}">1</td>
+            <td th:text="${complaint.title}">Faulty A/C Unit</td>
+            <td th:text="${#strings.replace(complaint.type.name(), '_', ' ')}">ELECTRICAL</td>
+            <td>
+                <!-- Dynamic Status Pill -->
+                <span th:class="|status-pill ${#strings.toLowerCase(complaint.status.name())}|">
+                    <span th:text="${#strings.replace(complaint.status.name(), '_', ' ')}" class="status-text">
+                        FORWARDED TO SUB ENGINEER
+                    </span>
+                </span>
+            </td>
+            <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <!-- Action Link Conditional Logic -->
+                <th:block th:if="${complaint.status.name() != 'INSPECTION_DONE' and complaint.status.name() != 'FORWARDED_TO_FINANCE'}">
+                    <a th:href="@{'/sub-engineer/' + ${subEngineerId} + '/report/' + ${complaint.id}}"
+                       class="action-link report">
+                        Submit Inspection Report
+                    </a>
+
+
+                </th:block>
+                <th:block th:if="${complaint.status.name() == 'INSPECTION_DONE'}">
+                    <span class="action-link disabled">Report Submitted</span>
+                </th:block>
+                <th:block th:if="${complaint.status.name() == 'FORWARDED_TO_FINANCE'}">
+                    <span class="action-link disabled">Report Forwarded</span>
+                </th:block>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
 
 </body>
 </html>

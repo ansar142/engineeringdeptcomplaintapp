@@ -12,7 +12,13 @@
 
 <div class="container">
     <h2>Your complaint has been registered.</h2>
+    <p>Redirecting you to the registration page in 3 seconds...</p>
 </div>
+<script>
+    setTimeout(function() {
+        window.location.href = "/complaints/register";
+    }, 3000); // 3000 milliseconds = 3 seconds
+</script>
 
 </body>
 </html>

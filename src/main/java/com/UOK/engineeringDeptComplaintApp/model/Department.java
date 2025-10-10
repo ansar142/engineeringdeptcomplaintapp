@@ -21,4 +21,10 @@ public class Department {
         this.contact = contact;
         this.otherMetadata = otherMetadata;
     }
+    public Department(Long id ,String name, String contact, String otherMetadata) {
+        this.id = id;
+        this.name = name;
+        this.contact = contact;
+        this.otherMetadata = otherMetadata;
+    }
 }

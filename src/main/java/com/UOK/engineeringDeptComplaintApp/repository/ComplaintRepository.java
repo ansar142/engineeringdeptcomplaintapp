@@ -3,6 +3,8 @@ package com.UOK.engineeringDeptComplaintApp.repository;
 import com.UOK.engineeringDeptComplaintApp.model.Complaint;
 import com.UOK.engineeringDeptComplaintApp.model.SubEngineer;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,4 +14,6 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
     // Find all complaints assigned to a specific Sub-Engineer
     List<Complaint> findBySubEngineer(SubEngineer subEngineer);
     List<Complaint> findByDepartmentId(Long departmentId);
+    @Query("SELECT c FROM Complaint c WHERE c.subEngineer.id = :subEngineerId")
+    List<Complaint> findBySubEngineerId(@Param("subEngineerId") Long subEngineerId);
 }

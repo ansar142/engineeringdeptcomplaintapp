@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Department</title>
+    <style>
+        :root {
+            --primary-green: #28a745;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary-green);
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 10px;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .nav-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: var(--text-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .nav-card h3 {
+            color: var(--primary-green);
+            margin-bottom: 10px;
+        }
+
+        .form-section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+
+        .submit-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        .cancel-btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cancel-btn:hover {
+            background-color: #545b62;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Edit Department</h1>
+
+    <!-- Navigation Cards -->
+    <div class="nav-grid">
+        <a th:href="@{/admin/dashboard}" class="nav-card">
+            <h3>Dashboard</h3>
+            <p>Back to main dashboard</p>
+        </a>
+        <a th:href="@{/admin/departments}" class="nav-card">
+            <h3>All Departments</h3>
+            <p>Back to departments list</p>
+        </a>
+        <a th:href="@{/admin/users}" class="nav-card">
+            <h3>User Management</h3>
+            <p>Manage system users</p>
+        </a>
+        <a th:href="@{/admin/sub-engineers}" class="nav-card">
+            <h3>Sub-Engineers</h3>
+            <p>Manage sub-engineers</p>
+        </a>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="form-section">
+        <h3>Edit Department Details</h3>
+        <form th:action="@{/admin/departments/update/{id}(id=${department.id})}" th:object="${department}" method="post">
+            <div class="form-group">
+                <label for="name">Department Name:</label>
+                <input type="text" id="name" th:field="*{name}" required placeholder="Enter department name">
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contact Information:</label>
+                <input type="text" id="contact" th:field="*{contact}" required placeholder="Enter contact information">
+            </div>
+
+            <div class="form-group">
+                <label for="otherMetadata">Additional Information:</label>
+                <input type="text" id="otherMetadata" th:field="*{otherMetadata}" placeholder="Enter any additional information">
+            </div>
+
+            <button type="submit" class="submit-btn">Update Department</button>
+            <a th:href="@{/admin/departments}" class="cancel-btn">Cancel</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

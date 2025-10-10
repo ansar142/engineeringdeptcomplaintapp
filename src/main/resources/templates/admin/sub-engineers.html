@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Sub-Engineers</title>
+    <style>
+        :root {
+            --primary-green: #28a745;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --border-color: #dee2e6;
+            --delete-red: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-green);
+            margin: 0;
+        }
+
+        .nav-btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .nav-btn:hover {
+            background-color: #5a6268;
+            color: white;
+            text-decoration: none;
+        }
+
+        .form-section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            max-width: 300px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-green);
+            color: white;
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: #e9f5ed;
+        }
+
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .delete-btn {
+            background-color: var(--delete-red);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .edit-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 8px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .edit-btn:hover {
+            background-color: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header with Back Button -->
+    <div class="header-section">
+        <h1>Manage Sub-Engineers</h1>
+        <a th:href="@{/admin/dashboard}" class="nav-btn">← Back to Dashboard</a>
+    </div>
+
+    <!-- Success Alerts -->
+    <div th:if="${param.success}" class="alert alert-success">
+        Operation completed successfully!
+    </div>
+
+    <!-- Error Alerts -->
+    <div th:if="${param.error}" class="alert alert-error">
+        Error performing operation. Please try again.
+    </div>
+
+    <!-- More Specific Alerts -->
+    <div th:if="${param.createSuccess}" class="alert alert-success">
+        Sub-engineer created successfully!
+    </div>
+
+    <div th:if="${param.createError}" class="alert alert-error">
+        Error creating sub-engineer. Please try again.
+    </div>
+
+    <div th:if="${param.deleteSuccess}" class="alert alert-success">
+        Sub-engineer deleted successfully!
+    </div>
+
+    <div th:if="${param.deleteError}" class="alert alert-error">
+        Error deleting sub-engineer. Please try again.
+    </div>
+
+    <div class="form-section">
+        <h3>Add New Sub-Engineer</h3>
+        <form th:action="@{/admin/sub-engineers/create}" th:object="${newSubEngineer}" method="post">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" th:field="*{name}" required placeholder="Enter full name">
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contact:</label>
+                <input type="text" id="contact" th:field="*{contact}" required placeholder="Enter contact information">
+            </div>
+
+            <div class="form-group">
+                <label for="specialization">Specialization:</label>
+                <select id="specialization" th:field="*{specialization}" required>
+                    <option value="">Select Specialization</option>
+                    <option th:each="type : ${complaintTypes}"
+                            th:value="${type}"
+                            th:text="${type}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username for Login:</label>
+                <input type="text" id="username" name="username" required placeholder="Create username for login">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required placeholder="Create password">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="text" id="email" name="email" placeholder="Enter email address">
+            </div>
+
+            <button type="submit" class="submit-btn">Add Sub-Engineer</button>
+        </form>
+    </div>
+
+    <h2>Existing Sub-Engineers</h2>
+    <table th:if="${!subEngineers.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Specialization</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="subEngineer : ${subEngineers}">
+            <td th:text="${subEngineer.id}"></td>
+            <td th:text="${subEngineer.name}"></td>
+            <td th:text="${subEngineer.contact}"></td>
+            <td th:text="${subEngineer.specialization}"></td>
+            <td>
+                <div class="action-buttons">
+                    <a th:href="@{/admin/sub-engineers/edit/{id}(id=${subEngineer.id})}" class="edit-btn">Edit</a>
+                    <form th:action="@{/admin/sub-engineers/delete/{id}(id=${subEngineer.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this sub-engineer?')">Delete</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p th:if="${subEngineers.isEmpty()}" style="text-align: center; padding: 20px; color: #666;">
+        No sub-engineers found.
+    </p>
+</div>
+
+<script>
+    // Auto-hide alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 500);
+            }, 5000);
+        });
+    });
+</script>
+</body>
+</html>

@@ -20,6 +20,6 @@ public class SubEngineer {
     @Enumerated(EnumType.STRING)
     private ComplaintType specialization;
 
-    @OneToMany(mappedBy = "subEngineer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subEngineer")
     private List<Complaint> assignedComplaints;
 }

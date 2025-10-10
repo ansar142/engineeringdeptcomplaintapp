@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Departments</title>
+    <style>
+        :root {
+            --primary-green: #28a745;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --border-color: #dee2e6;
+            --delete-red: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary-green);
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 10px;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .nav-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: var(--text-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .nav-card h3 {
+            color: var(--primary-green);
+            margin-bottom: 10px;
+        }
+
+        .form-section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-green);
+            color: white;
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: #e9f5ed;
+        }
+
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .delete-btn {
+            background-color: var(--delete-red);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .edit-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 8px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .edit-btn:hover {
+            background-color: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Manage Departments</h1>
+
+    <!-- Navigation Cards -->
+    <div class="nav-grid">
+        <a th:href="@{/admin/dashboard}" class="nav-card">
+            <h3>Dashboard</h3>
+            <p>Back to main dashboard</p>
+        </a>
+        <a th:href="@{/admin/users}" class="nav-card">
+            <h3>User Management</h3>
+            <p>Manage system users</p>
+        </a>
+        <a th:href="@{/admin/sub-engineers}" class="nav-card">
+            <h3>Sub-Engineers</h3>
+            <p>Manage sub-engineers</p>
+        </a>
+        <a th:href="@{/admin/reports}" class="nav-card">
+            <h3>System Reports</h3>
+            <p>View statistics</p>
+        </a>
+    </div>
+
+    <!-- Success Alerts -->
+    <div th:if="${param.success}" class="alert alert-success">
+        Operation completed successfully!
+    </div>
+
+    <div th:if="${param.createSuccess}" class="alert alert-success">
+        Department created successfully!
+    </div>
+
+    <div th:if="${param.updateSuccess}" class="alert alert-success">
+        Department updated successfully!
+    </div>
+
+    <div th:if="${param.deleteSuccess}" class="alert alert-success">
+        Department deleted successfully!
+    </div>
+
+    <!-- Error Alerts -->
+    <div th:if="${param.error}" class="alert alert-error">
+        Error performing operation. Please try again.
+    </div>
+
+    <div th:if="${param.createError}" class="alert alert-error">
+        Error creating department. Please try again.
+    </div>
+
+    <div th:if="${param.deleteError}" class="alert alert-error">
+        Error deleting department. Please try again.
+    </div>
+
+    <!-- Add Department Form -->
+    <div class="form-section">
+        <h3>Add New Department</h3>
+        <form th:action="@{/admin/departments/create}" th:object="${newDepartment}" method="post">
+            <div class="form-group">
+                <label for="name">Department Name:</label>
+                <input type="text" id="name" th:field="*{name}" required placeholder="Enter department name">
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contact Information:</label>
+                <input type="text" id="contact" th:field="*{contact}" required placeholder="Enter contact information">
+            </div>
+
+            <div class="form-group">
+                <label for="otherMetadata">Additional Information:</label>
+                <input type="text" id="otherMetadata" th:field="*{otherMetadata}" placeholder="Enter any additional information">
+            </div>
+
+            <button type="submit" class="submit-btn">Add Department</button>
+        </form>
+    </div>
+
+    <!-- Departments List -->
+    <h2>Existing Departments</h2>
+    <table th:if="${!departments.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Additional Info</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="department : ${departments}">
+            <td th:text="${department.id}"></td>
+            <td th:text="${department.name}"></td>
+            <td th:text="${department.contact}"></td>
+            <td th:text="${department.otherMetadata} ?: 'N/A'"></td>
+            <td>
+                <div class="action-buttons">
+                    <a th:href="@{/admin/departments/edit/{id}(id=${department.id})}" class="edit-btn">Edit</a>
+                    <form th:action="@{/admin/departments/delete/{id}(id=${department.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this department?')">Delete</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p th:if="${departments.isEmpty()}" style="text-align: center; padding: 20px; color: #666;">
+        No departments found. Create your first department above.
+    </p>
+</div>
+
+<script>
+    // Auto-hide alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 500);
+            }, 5000);
+        });
+    });
+</script>
+</body>
+</html>

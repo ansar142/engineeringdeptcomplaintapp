@@ -2,79 +2,102 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Submit Inspection Report</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <!-- Use inline style for single-file mandate compliance -->
     <style>
-        /* CSS for green/white theme remains the same as before */
+        /* CSS Variables for a consistent green theme */
         :root {
-            --primary-green: #28a745;
-            --light-green: #e6ffe9;
-            --dark-green: #1e7e34;
-            --text-color: #333;
+            --primary-green: #4CAF50; /* Submit button, primary accents */
+            --dark-green: #388E3C; /* Darker green for hover/text */
+            --light-green-bg: #e5f5e3; /* Very light green background */
+            --file-bg: #f7fff5; /* Lighter green background for file section */
             --white: #ffffff;
+            --text-color: #333;
             --border-color: #ced4da;
+            --secondary-text: #6c757d;
         }
 
+        /* Base Styling */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-green);
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: var(--light-green-bg);
             color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
             margin: 0;
-            padding: 40px;
         }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+        /* Form Card Container */
+        .form-container {
             background-color: var(--white);
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            margin-top: 50px;
         }
 
+        /* Heading and Divider */
         h2 {
-            color: var(--primary-green);
-            border-bottom: 2px solid var(--primary-green);
-            padding-bottom: 10px;
-            margin-bottom: 25px;
+            color: var(--dark-green);
+            margin-bottom: 5px;
             text-align: center;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+        .divider {
+            border: none;
+            height: 3px;
+            background-color: var(--primary-green);
+            width: 150px;
+            margin: 0 auto 25px auto;
+            border-radius: 2px;
         }
 
-        form div {
-            margin-bottom: 20px;
-        }
-
+        /* Labels and Textarea */
         label {
             display: block;
             margin-bottom: 8px;
+            color: var(--dark-green);
             font-weight: 600;
-            color: var(--primary-green);
+            font-size: 1.1em;
+            text-align: left;
         }
-
+        form div {
+            margin-bottom: 20px;
+        }
+        .details-label {
+            margin-top: 20px;
+        }
         textarea {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             box-sizing: border-box;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             transition: border-color 0.3s;
-            resize: vertical; /* Allow vertical resizing only */
+            height: 150px;
+            resize: vertical;
         }
-
         textarea:focus {
             border-color: var(--primary-green);
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
             outline: none;
         }
 
-        /* Custom File Input Styling */
+        /* Custom File Input Wrapper */
         .file-upload-wrapper {
             position: relative;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 10px;
-            background-color: var(--light-green);
+            border: 1px solid #c8e6c9;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: var(--file-bg);
             transition: border-color 0.3s;
         }
 
@@ -84,6 +107,7 @@
             align-items: center;
         }
 
+        /* Custom File Input Button */
         .file-input-button {
             background-color: var(--primary-green);
             color: var(--white);
@@ -97,27 +121,23 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .file-input-button:hover {
             background-color: var(--dark-green);
         }
 
-        /* The plus symbol effect */
         .file-input-button::before {
             content: '+';
             font-size: 1.2em;
-            margin-right: 5px;
+            margin-right: 2px;
         }
 
-        .hidden-file-input {
-            /* Keep it hidden and functional */
-            display: none; /* Hide the native input completely, rely on button click */
-        }
-
+        /* Selected Files Display */
         .selected-files-display {
             padding-top: 5px;
-            border-top: 1px dashed var(--border-color);
+            border-top: 1px dashed #c8e6c9;
             margin-top: 5px;
             display: flex;
             flex-wrap: wrap;
@@ -127,14 +147,14 @@
             font-size: 0.9em;
         }
 
-        /* New style for placeholder text */
         .selected-files-display .placeholder-text {
-             color: var(--secondary-text);
-             font-style: italic;
+            color: var(--secondary-text);
+            font-style: italic;
         }
 
         .selected-files-display .file-name {
-            background-color: #f0f0f0;
+            background-color: #e0e0e0; /* Light gray chip */
+            color: var(--text-color);
             padding: 4px 8px;
             border-radius: 4px;
             max-width: 100%;
@@ -144,57 +164,73 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            border: 1px solid #ccc;
         }
 
-        /* Fix for Red Cross Visibility and Clickability */
+        /* Remove Button */
         .file-name .remove-btn {
             cursor: pointer;
-            color: red;
+            color: #d32f2f; /* Red cross */
             font-weight: bold;
             font-size: 1.1em;
             line-height: 1;
-            /* Ensure the button is visually distinct and not covered */
             background: none;
             border: none;
             padding: 0;
             margin-left: 5px;
-            user-select: none; /* Prevent text selection on quick double click */
+            user-select: none;
         }
 
+        /* Submit Button */
         .submit-button {
-            background-color: var(--primary-green);
+            background-color: var(--dark-green);
             color: var(--white);
-            padding: 12px 25px;
+            padding: 15px 30px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
+            font-weight: 700;
+            font-size: 1.2em;
             width: 100%;
-            transition: background-color 0.3s;
-            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, box-shadow 0.3s;
+            margin-top: 30px;
         }
 
         .submit-button:hover {
-            background-color: var(--dark-green);
+            background-color: #2e7d32; /* Even darker green on hover */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
     </style>
 </head>
 <body>
-<div class="container">
+<div class="form-container">
     <h2>Submit Inspection Report</h2>
+    <div class="divider"></div>
+
     <form id="reportForm" th:action="@{/sub-engineer/submit-report}" method="post" enctype="multipart/form-data">
+        <!-- CRITICAL FIX: Hidden field to pass the SubEngineerId for successful redirection -->
+        <input type="hidden" name="subEngineerId" th:value="${subEngineerId}" />
+
+        <!-- Hidden field to pass the ComplaintId being reported on -->
         <input type="hidden" name="complaintId" th:value="${complaintId}" />
 
         <div>
-            <label for="reportDetails">Inspection Details:</label>
-            <textarea id="reportDetails" name="reportDetails" rows="8" placeholder="Enter detailed inspection findings and suggested actions..."></textarea>
+            <label for="reportDetails" class="details-label">Inspection Details:</label>
+            <textarea
+                    id="reportDetails"
+                    name="reportDetails"
+                    rows="8"
+                    placeholder="Enter detailed inspection findings and suggested actions..."
+                    required>
+            </textarea>
         </div>
 
         <div>
             <label>Upload Images/PDFs (Multiple Files Allowed):</label>
             <div class="file-upload-wrapper">
                 <div class="file-upload-header">
+                    <!-- The actual file input is hidden by JS/CSS -->
                     <input type="file" id="files" name="files" multiple accept="image/*, application/pdf" style="display: none;" />
 
                     <button type="button" class="file-input-button" id="chooseFilesBtn">
@@ -205,6 +241,7 @@
                 </div>
 
                 <div id="selectedFiles" class="selected-files-display">
+                    <!-- File names will be rendered here by JavaScript -->
                 </div>
             </div>
         </div>
@@ -213,6 +250,7 @@
     </form>
 </div>
 
+<!-- JavaScript for file accumulation and deselection -->
 <script>
     // Global array to store accumulated File objects
     let selectedFileArray = [];
@@ -239,13 +277,12 @@
         selectedFilesDisplay.innerHTML = ''; // Clear display
 
         if (selectedFileArray.length > 0) {
-            fileStatus.textContent = `${selectedFileArray.length} files total. Click again to add more.`;
+            fileStatus.textContent = `${selectedFileArray.length} file(s) selected. Click to add more.`;
 
             selectedFileArray.forEach((file, index) => {
                 const fileNameSpan = document.createElement('span');
                 fileNameSpan.classList.add('file-name');
 
-                // Use a standard button for removal (more clickable area)
                 // We use data-file-index to link the button to the file index
                 fileNameSpan.innerHTML = `
                     <span>${file.name}</span>
@@ -279,20 +316,19 @@
     });
 
     // CRITICAL FIX: Event Delegation for removing files
-    // Listen for clicks on the parent container (selectedFilesDisplay)
     selectedFilesDisplay.addEventListener('click', function(event) {
         const target = event.target;
 
-        // 1. Check if the clicked element has the class 'remove-btn'
+        // Check if the clicked element has the class 'remove-btn'
         if (target.classList.contains('remove-btn')) {
-            // Prevent default button behavior and stop event propagation
+            // Prevent default button behavior
             event.preventDefault();
             event.stopPropagation();
 
-            // 2. Get the index from the data attribute and convert it to an integer
+            // Get the index from the data attribute
             const indexToRemove = parseInt(target.getAttribute('data-file-index'));
 
-            // 3. Ensure the index is valid before removal
+            // Ensure the index is valid before removal
             if (!isNaN(indexToRemove)) {
                 removeFile(indexToRemove);
             }
@@ -302,7 +338,7 @@
 
     // CRITICAL: Event listener for form submission
     reportForm.addEventListener('submit', function(event) {
-        // This ensures that even if the input is hidden, the browser still sends the correct files.
+        // This process sets the hidden file input's value to the accumulated array before submission.
         const dataTransfer = new DataTransfer();
 
         selectedFileArray.forEach(file => {

@@ -32,13 +32,45 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
+        /* Header Section with Back Button */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .header-section h2 {
+            margin: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .back-btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #5a6268;
+            color: white;
+            text-decoration: none;
+        }
+
         /* Headings and Separator */
         h2 {
             color: var(--primary-green);
             font-size: 24px;
-            padding-bottom: 5px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color); /* Light separator */
         }
 
         h3 {
@@ -162,7 +194,11 @@
 <body>
 
 <div class="container">
-    <h2 th:text="${complaint.title}">Complaint Title</h2>
+    <!-- Header with Back Button -->
+    <div class="header-section">
+        <h2 th:text="${complaint.title}">Complaint Title</h2>
+        <a th:href="@{/chief}" class="back-btn">← Back to Complaints List</a>
+    </div>
 
     <div class="detail-block">
         <div class="detail-item">
@@ -198,7 +234,7 @@
     <div th:if="${complaint.report != null}" class="card">
         <h3>Inspection Report</h3>
         <div class="detail-item">
-            <strong>Inspected By:</strong> <span th:text="${complaint.subEngineer.name}"></span>
+            <strong>Inspected By:</strong> <span th:text="${complaint.subEngineer?.name ?: 'Sub-Engineer Deleted'}"></span>
         </div>
         <div class="detail-item">
             <strong>Inspection Date:</strong> <span th:text="${#temporals.format(complaint.report.inspectionDate, 'yyyy-MM-dd')}"></span>
@@ -256,7 +292,7 @@
     </div>
 
     <p th:if="${complaint.subEngineer != null && complaint.report == null}" style="margin-top: 25px;">
-        <strong>Assigned to:</strong> <span th:text="${complaint.subEngineer.name}"></span> (Awaiting report)
+        <strong>Assigned to:</strong> <span th:text="${complaint.subEngineer?.name ?: 'Sub-Engineer Deleted'}"></span> (Awaiting report)
     </p>
 
 </div>
