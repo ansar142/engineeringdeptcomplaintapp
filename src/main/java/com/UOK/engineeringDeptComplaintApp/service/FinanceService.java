@@ -22,4 +22,10 @@ public class FinanceService {
     public List<Report> getAllForwardedReports() {
         return reportRepository.findByComplaintStatus(ComplaintStatus.FORWARDED_TO_FINANCE);
     }
+
+    public Report getReportById(Long id) {
+        return reportRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Report not found with id: " + id));
+    }
+
 }

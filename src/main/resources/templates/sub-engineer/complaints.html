@@ -14,6 +14,8 @@
             --header-color: #004d40; /* Darker header color */
             --border-color: #ced4da;
             --action-blue: #007bff;
+            --logout-red: #dc3545;      /* Red color for logout button */
+            --logout-red-dark: #c82333; /* Darker red for hover state */
         }
 
         body {
@@ -31,6 +33,7 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative; /* For positioning the logout button */
         }
 
         h2 {
@@ -39,6 +42,34 @@
             padding-bottom: 10px;
             margin-bottom: 25px;
             font-weight: 600;
+        }
+
+        /* Logout Button Styling */
+        .logout-container {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+        }
+
+        .logout-btn {
+            background-color: var(--logout-red);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--logout-red-dark);
+            text-decoration: none;
+            color: white;
         }
 
         /* Message Box for success/empty state */
@@ -145,6 +176,13 @@
 <body>
 
 <div class="container">
+    <!-- Logout Button - Using POST method for CSRF protection -->
+    <div class="logout-container">
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+
     <h2>Sub-Engineer Dashboard: My Assigned Complaints</h2>
 
     <!-- Success Message -->
@@ -190,8 +228,6 @@
                        class="action-link report">
                         Submit Inspection Report
                     </a>
-
-
                 </th:block>
                 <th:block th:if="${complaint.status.name() == 'INSPECTION_DONE'}">
                     <span class="action-link disabled">Report Submitted</span>

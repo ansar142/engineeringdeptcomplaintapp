@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Financial Report Review</title>
+    <style>
+        /* Professional Green/White Theme Variables */
+        :root {
+            --primary-green: #28a745;
+            --light-green: #e9f5ed;
+            --dark-green: #1e7e34;
+            --light-bg: #e6ffe9;
+            --text-color: #333;
+            --white: #ffffff;
+            --border-color: #ced4da;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: var(--primary-green);
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        h3 {
+            color: var(--dark-green);
+            border-bottom: 1px dashed var(--primary-green);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .detail-item {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+        .detail-item strong {
+            display: inline-block;
+            min-width: 160px;
+            font-weight: 600;
+            color: #555;
+            margin-right: 10px;
+        }
+        .status-display {
+            font-weight: bold;
+            color: var(--primary-green);
+            background-color: var(--light-green);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .report-section {
+            margin-top: 30px;
+            border: 1px solid var(--primary-green);
+            background-color: var(--light-green);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: var(--primary-green);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 15px;
+            border: 1px solid var(--primary-green);
+            border-radius: 6px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .back-link:hover {
+            background-color: var(--primary-green);
+            color: var(--white);
+            text-decoration: none;
+        }
+        .report-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-top: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+        }
+        .attachment-box {
+            background-color: var(--white);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            margin-top: 10px;
+        }
+        .attachment-item {
+            margin-bottom: 15px;
+        }
+        .financial-section {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .file-link {
+            color: #1976d2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .file-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Financial Review - Report Details</h2>
+
+    <!-- Complaint Information -->
+    <h3>Complaint Information</h3>
+    <div class="detail-item">
+        <strong>Complaint ID:</strong>
+        <span th:text="${report.complaint.id}">1</span>
+    </div>
+
+    <div class="detail-item">
+        <strong>Complaint Title:</strong>
+        <span th:text="${report.complaint.title}">Complaint Title</span>
+    </div>
+
+    <div class="detail-item">
+        <strong>Complaint Type:</strong>
+        <span th:text="${#strings.replace(report.complaint.type, '_', ' ')}">CIVIL</span>
+    </div>
+
+    <div class="detail-item" style="display: block;">
+        <strong>Description:</strong>
+        <p th:text="${report.complaint.description}" style="margin-top: 5px; padding-left: 10px;"></p>
+    </div>
+
+    <!-- Inspection Report Section -->
+    <div class="report-section">
+        <h3>Inspection Report</h3>
+
+        <div class="detail-item">
+            <strong>Inspected By:</strong>
+            <span th:text="${report.subEngineer.name}">John Smith</span>
+        </div>
+
+        <div class="detail-item">
+            <strong>Inspection Date:</strong>
+            <span th:text="${#temporals.format(report.inspectionDate, 'yyyy-MM-dd HH:mm')}">2025-10-13 10:00</span>
+        </div>
+
+        <div class="detail-item" style="display: block;">
+            <strong>Report Details:</strong>
+            <p th:text="${report.details}" style="margin-top: 5px; padding-left: 10px;"></p>
+        </div>
+
+        <!-- File Attachments -->
+        <div th:if="${reportFiles != null and not #arrays.isEmpty(reportFiles)}">
+            <h4>File Attachments:</h4>
+            <div class="attachment-box">
+                <div th:each="fileName : ${reportFiles}" th:if="${not #strings.isEmpty(fileName)}" class="attachment-item">
+                    <!-- Use /images/ path for file access -->
+                    <div th:with="fileUrl=@{/images/{fileName}(fileName=${fileName})}">
+                        <span th:if="${FileMimeUtil.isImage(fileName)}">
+                            <strong>Image: </strong>
+                            <a th:href="${fileUrl}" th:text="${fileName}" class="file-link" target="_blank"></a>
+                            <img th:src="${fileUrl}" class="report-image" th:alt="'Inspection Image: ' + ${fileName}"/>
+                        </span>
+
+                        <span th:unless="${FileMimeUtil.isImage(fileName)}">
+                            <strong>Document: </strong>
+                            <a th:href="${fileUrl}" th:text="${fileName}" class="file-link" target="_blank"></a>
+                            <p style="font-size: 0.9em; color: #777; margin-top: 5px;">(Document will open in a new tab or download automatically.)</p>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a th:href="@{/finance/reports}" class="back-link">← Back to Financial Reports</a>
+</div>
+
+</body>
+</html>

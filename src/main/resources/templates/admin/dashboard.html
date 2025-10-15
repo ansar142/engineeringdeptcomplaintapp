@@ -9,6 +9,8 @@
             --card-bg: #ffffff;
             --text-color: #333;
             --border-color: #dee2e6;
+            --logout-red: #dc3545;      /* Red color for logout button */
+            --logout-red-dark: #c82333; /* Darker red for hover state */
         }
 
         body {
@@ -21,6 +23,7 @@
         .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative; /* For positioning the logout button */
         }
 
         h1 {
@@ -28,6 +31,34 @@
             margin-bottom: 30px;
             border-bottom: 2px solid var(--primary-green);
             padding-bottom: 10px;
+        }
+
+        /* Logout Button Styling */
+        .logout-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .logout-btn {
+            background-color: var(--logout-red);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--logout-red-dark);
+            text-decoration: none;
+            color: white;
         }
 
         .stats-grid {
@@ -86,6 +117,13 @@
 </head>
 <body>
 <div class="dashboard-container">
+    <!-- Logout Button -->
+    <div class="logout-container">
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+
     <h1>Admin Dashboard</h1>
 
     <div class="stats-grid">

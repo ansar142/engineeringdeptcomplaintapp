@@ -23,6 +23,12 @@ services:
       POSTGRES_DB: db_engDept_complaint
     ports:
       - "5433:5432"  # External:5433 -> Internal:5432
+    volumes:
+      # Named volume (recommended for production)
+      - postgres_data:/var/lib/postgresql/data
+
+      # Alternative: Bind mount (easier to access from host)
+      # - ./postgres-data:/var/lib/postgresql/data
     networks:
       - new-network
     healthcheck:
@@ -35,3 +41,8 @@ services:
 networks:
   new-network:
     driver: bridge
+
+volumes:
+  postgres_data:
+  # Optional: Use a specific driver
+  # driver: local

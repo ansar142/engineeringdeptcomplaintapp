@@ -3,6 +3,7 @@ package com.UOK.engineeringDeptComplaintApp.controller;
 import com.UOK.engineeringDeptComplaintApp.model.Complaint;
 import com.UOK.engineeringDeptComplaintApp.service.SubEngineerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +22,14 @@ public class SubEngineerController {
 
     private final SubEngineerService subEngineerService;
 
+    // 1. Inject the configured upload directory path
+    @Value("${file.upload-dir}")
+    private String uploadDirectory;
+
     @Autowired
     public SubEngineerController(SubEngineerService subEngineerService) {
         this.subEngineerService = subEngineerService;
     }
-
     // Displays the list of complaints assigned to a specific Sub-Engineer
     @GetMapping("/{id}/complaints")
     public String viewAssignedComplaints(@PathVariable Long id, Model model) {
@@ -61,8 +65,7 @@ public class SubEngineerController {
         List<String> filePaths = new ArrayList<>();
         // Note: Using System.getProperty("user.dir") for uploads is often not best practice
         // in production, but is fine for local development setups.
-        String uploadDirectory = System.getProperty("user.dir") + "/src/main/resources/static/images/";
-
+        String uploadDir = uploadDirectory;
         // 1. Process all uploaded files
         for (MultipartFile file : files) {
             if (file.isEmpty()) {
@@ -70,7 +73,7 @@ public class SubEngineerController {
             }
 
             try {
-                Path uploadPath = Paths.get(uploadDirectory);
+                Path uploadPath = Paths.get(uploadDir); // Use the external directory
 
                 // Create the directory if it doesn't exist
                 if (!Files.exists(uploadPath)) {
@@ -80,10 +83,10 @@ public class SubEngineerController {
                 String originalFileName = file.getOriginalFilename();
                 String uniqueFileName = System.currentTimeMillis() + "_" + originalFileName.replaceAll("[^a-zA-Z0-9.\\-]", "_");
 
-                Path destPath = Paths.get(uploadDirectory + uniqueFileName);
+                Path destPath = Paths.get(uploadDir + "/" + uniqueFileName); // Ensure separation with a slash
 
                 file.transferTo(destPath.toFile());
-                filePaths.add("/images/" + uniqueFileName);
+                filePaths.add("/images/" + uniqueFileName); // The URL path remains /images/
 
             } catch (IOException e) {
                 e.printStackTrace();
