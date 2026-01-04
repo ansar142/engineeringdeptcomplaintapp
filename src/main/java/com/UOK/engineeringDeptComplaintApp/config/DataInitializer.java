@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-@ConditionalOnProperty(name = "app.init-default-data", havingValue = "true")
+@ConditionalOnProperty(name = "app.init-default-data")
 public class DataInitializer {
 
     @Bean
@@ -48,10 +48,10 @@ public class DataInitializer {
         if (subEngineerService.getAllSubEngineers().isEmpty()) {
             // Create default sub-engineers
             List<SubEngineer> subEngineers = List.of(
-                    createSubEngineer("John Smith", "john.smith@uok.edu", ComplaintType.ELECTRICAL),
-                    createSubEngineer("Sarah Johnson", "sarah.j@uok.edu", ComplaintType.CIVIL),
-                    createSubEngineer("Mike Davis", "mike.davis@uok.edu", ComplaintType.MECHANICAL),
-                    createSubEngineer("Lisa Brown", "lisa.brown@uok.edu", ComplaintType.PUMPING)
+                    createSubEngineer("Subhan Khan", "subhan.K@uok.edu", ComplaintType.ELECTRICAL),
+                    createSubEngineer("Ali Rehman", "ali.r@uok.edu", ComplaintType.CIVIL),
+                    createSubEngineer("Mukesh Ambani", "mukesh.a@uok.edu", ComplaintType.MECHANICAL),
+                    createSubEngineer("Sadiq Mehmood", "sadiq.m@uok.edu", ComplaintType.PUMPING)
             );
 
             for (SubEngineer se : subEngineers) {
@@ -117,16 +117,16 @@ public class DataInitializer {
         // Create Sub-Engineer users
         List<SubEngineer> subEngineers = subEngineerService.getAllSubEngineers();
         if (!subEngineers.isEmpty()) {
-            if (userService.findByUsername("john_engineer").isEmpty()) {
-                User johnEngineer = createUser("john_engineer", "engineer123", "john.engineer@uok.edu", "John Engineer", UserRole.ROLE_SUB_ENGINEER, null, subEngineers.get(0));
+            if (userService.findByUsername("subhan_engineer").isEmpty()) {
+                User johnEngineer = createUser("subhan_engineer", "engineer123", "john.engineer@uok.edu", "John Engineer", UserRole.ROLE_SUB_ENGINEER, null, subEngineers.get(0));
                 userService.createUser(johnEngineer);
-                System.out.println("Sub-Engineer user created: john_engineer/engineer123");
+                System.out.println("Sub-Engineer user created: subhan_engineer/engineer123");
             }
 
-            if (userService.findByUsername("sarah_engineer").isEmpty()) {
-                User sarahEngineer = createUser("sarah_engineer", "engineer123", "sarah.engineer@uok.edu", "Sarah Engineer", UserRole.ROLE_SUB_ENGINEER, null, subEngineers.get(1));
+            if (userService.findByUsername("sadiq_engineer").isEmpty()) {
+                User sarahEngineer = createUser("sadiq_engineer", "engineer123", "sarah.engineer@uok.edu", "Sarah Engineer", UserRole.ROLE_SUB_ENGINEER, null, subEngineers.get(1));
                 userService.createUser(sarahEngineer);
-                System.out.println("Sub-Engineer user created: sarah_engineer/engineer123");
+                System.out.println("Sub-Engineer user created: sadiq_engineer/engineer123");
             }
         }
     }

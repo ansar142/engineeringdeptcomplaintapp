@@ -1,5 +1,6 @@
 package com.UOK.engineeringDeptComplaintApp.repository;
 
+import com.UOK.engineeringDeptComplaintApp.model.Department;
 import com.UOK.engineeringDeptComplaintApp.model.User;
 import com.UOK.engineeringDeptComplaintApp.model.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,8 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+
     Optional<User> findByUsername(String username);
     List<User> findByRole(UserRole role);
     boolean existsByUsername(String username);

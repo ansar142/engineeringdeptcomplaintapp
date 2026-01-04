@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register Complaint</title>
+    <style>
+        :root {
+            --primary-green: #28a745;
+            --light-green: #f7fff8;
+            --dark-green: #1e7e34;
+            --light-bg: #e6ffe9;
+            --text-color: #333;
+            --white: #ffffff;
+            --border-color: #ced4da;
+            --error-red: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--primary-green);
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .department-badge {
+            background-color: var(--light-green);
+            border: 1px solid var(--primary-green);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark-green);
+        }
+
+        form div {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary-green);
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .submit-button {
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            flex: 2;
+            transition: background-color 0.3s;
+        }
+
+        .submit-button:hover {
+            background-color: var(--dark-green);
+        }
+
+        .view-button {
+            background-color: #6c757d;
+            color: var(--white);
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            flex: 1;
+            transition: background-color 0.3s;
+        }
+
+        .view-button:hover {
+            background-color: #545b62;
+            color: white;
+            text-decoration: none;
+        }
+
+        .error-message {
+            color: var(--error-red);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Register a New Complaint</h2>
+
+    <!-- Display user's department -->
+    <div class="department-badge" th:if="${userDepartment != null}">
+        Department: <span th:text="${userDepartment.name}"></span>
+        <p style="font-size: 0.9em; font-weight: normal; margin-top: 5px; color: #666;">
+            All complaints will be registered under your department
+        </p>
+    </div>
+
+    <form th:action="@{/complaints/register}" th:object="${complaint}" method="post">
+        <!-- Hidden field for department -->
+        <input type="hidden" th:field="*{department}" th:value="${userDepartment.id}" />
+
+        <div>
+            <label for="title">Complaint Title:</label>
+            <input type="text" id="title" th:field="*{title}"
+                   placeholder="e.g., Leaking water pipe in Block A" required>
+            <div class="error-message" id="titleError"></div>
+        </div>
+
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" th:field="*{description}"
+                      placeholder="Provide detailed information about the issue..." required></textarea>
+            <div class="error-message" id="descriptionError"></div>
+        </div>
+
+        <div>
+            <label for="type">Complaint Type:</label>
+            <select id="type" th:field="*{type}" required>
+                <option value="">Select Type</option>
+                <option th:each="complaintType : ${T(com.UOK.engineeringDeptComplaintApp.model.ComplaintType).values()}"
+                        th:value="${complaintType}"
+                        th:text="${#strings.replace(complaintType, '_', ' ')}">
+                </option>
+            </select>
+            <div class="error-message" id="typeError"></div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="submit-button">Submit Complaint</button>
+
+            <a th:href="@{/complaints/department/{id}(id=${userDepartment.id})}"
+               class="view-button"
+               th:if="${userDepartment != null}">
+                View Complaints
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Clear previous errors
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.style.display = 'none';
+            el.textContent = '';
+        });
+
+        // Validate title
+        const title = document.getElementById('title').value.trim();
+        if (!title) {
+            document.getElementById('titleError').textContent = 'Please enter a complaint title';
+            document.getElementById('titleError').style.display = 'block';
+            isValid = false;
+        }
+
+        // Validate description
+        const description = document.getElementById('description').value.trim();
+        if (!description) {
+            document.getElementById('descriptionError').textContent = 'Please enter a description';
+            document.getElementById('descriptionError').style.display = 'block';
+            isValid = false;
+        }
+
+        // Validate type
+        const type = document.getElementById('type').value;
+        if (!type) {
+            document.getElementById('typeError').textContent = 'Please select a complaint type';
+            document.getElementById('typeError').style.display = 'block';
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+</script>
+
+</body>
+</html>

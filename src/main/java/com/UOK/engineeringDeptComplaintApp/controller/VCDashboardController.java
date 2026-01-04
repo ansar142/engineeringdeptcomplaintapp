@@ -21,24 +21,5 @@ public class VCDashboardController {
         this.complaintService = complaintService;
     }
 
-    @GetMapping("/dashboard")
-    public String vcDashboard(Model model) {
-        List<Complaint> complaints = complaintService.getAllComplaints();
 
-        // Calculate statistics
-        long totalComplaints = complaints.size();
-        long pendingComplaints = complaints.stream()
-                .filter(c -> c.getStatus() != com.UOK.engineeringDeptComplaintApp.model.ComplaintStatus.FORWARDED_TO_FINANCE)
-                .count();
-        long completedComplaints = complaints.stream()
-                .filter(c -> c.getStatus() == com.UOK.engineeringDeptComplaintApp.model.ComplaintStatus.FORWARDED_TO_FINANCE)
-                .count();
-
-        model.addAttribute("totalComplaints", totalComplaints);
-        model.addAttribute("pendingComplaints", pendingComplaints);
-        model.addAttribute("completedComplaints", completedComplaints);
-        model.addAttribute("complaints", complaints);
-
-        return "vc/dashboard";
-    }
 }

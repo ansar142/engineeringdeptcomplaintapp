@@ -4,5 +4,6 @@ public enum ComplaintType {
     CIVIL,
     MECHANICAL,
     ELECTRICAL,
-    PUMPING
+    PUMPING,
+    any
 }
