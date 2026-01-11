@@ -10,6 +10,7 @@ import com.UOK.engineeringDeptComplaintApp.repository.ReportRepository;
 import com.UOK.engineeringDeptComplaintApp.repository.SubEngineerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +34,19 @@ public class SubEngineerService {
         SubEngineer subEngineer = subEngineerRepository.findById(subEngineerId)
                 .orElseThrow(() -> new IllegalArgumentException("Sub-Engineer not found"));
         return complaintRepository.findBySubEngineer(subEngineer);
+    }
+
+
+    public List<Complaint> getFilteredAssignedComplaints(Long subEngineerId, String title, String status) {
+        // Reuse your existing logic to get basic list
+        List<Complaint> allAssigned = getAssignedComplaints(subEngineerId);
+
+        return allAssigned.stream()
+                .filter(c -> (title == null || title.isEmpty() ||
+                        c.getTitle().toLowerCase().contains(title.toLowerCase())))
+                .filter(c -> (status == null || status.isEmpty() ||
+                        c.getStatus().name().equals(status)))
+                .collect(Collectors.toList());
     }
 
     public void submitReport(Long complaintId, String reportDetails, String combinedFilePaths) {

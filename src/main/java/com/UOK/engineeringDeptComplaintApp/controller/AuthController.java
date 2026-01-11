@@ -2,6 +2,7 @@ package com.UOK.engineeringDeptComplaintApp.controller;
 
 import com.UOK.engineeringDeptComplaintApp.model.User;
 import com.UOK.engineeringDeptComplaintApp.service.UserService;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,11 @@ public class AuthController {
     public String login(@RequestParam(value = "error", required = false) String error,
                         @RequestParam(value = "logout", required = false) String logout,
                         Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+            // Redirect them to the dashboard logic so they don't see the login page again
+            return "redirect:/dashboard";
+        }
         if (error != null) {
             model.addAttribute("error", "Invalid username or password!");
         }

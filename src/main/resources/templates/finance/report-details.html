@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Financial Report Review</title>
+    <title>Financial Report Review | UOK Engineering</title>
     <style>
-        /* Professional Green/White Theme Variables */
         :root {
             --primary-green: #28a745;
-            --light-green: #e9f5ed;
             --dark-green: #1e7e34;
             --light-bg: #e6ffe9;
-            --text-color: #333;
             --white: #ffffff;
             --border-color: #ced4da;
+            --text-muted: #6c757d;
         }
 
         body {
@@ -19,178 +17,251 @@
             margin: 0;
             padding: 40px;
             background-color: var(--light-bg);
-            color: var(--text-color);
+            color: #333;
+            line-height: 1.6;
         }
+
         .container {
-            max-width: 800px;
+            max-width: 950px;
             margin: auto;
             background-color: var(--white);
-            padding: 30px;
+            padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
-        h2 {
-            color: var(--primary-green);
-            border-bottom: 2px solid var(--primary-green);
-            padding-bottom: 10px;
-            margin-bottom: 25px;
+
+        /* Header Section */
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--primary-green);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+        }
+
+        h2 { color: var(--primary-green); margin: 0; font-size: 1.8em; }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .status-REGISTERED { background-color: #007bff; }
+        .status-FORWARDED_TO_FINANCE { background-color: #fd7e14; }
+        .status-APPROVED { background-color: var(--primary-green); }
+        .status-INSPECTION_DONE { background-color: #6f42c1; }
+
+        /* Section Styling */
+        .section-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--dark-green);
+            background: #f1f8f3;
+            padding: 10px 20px;
+            border-left: 5px solid var(--primary-green);
+            margin: 30px 0 20px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Detail Grid - Fixed Alignment */
+        .detail-card {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 0 10px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        .info-item label {
+            color: var(--text-muted);
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .info-item span {
+            font-size: 1.05em;
+            font-weight: 500;
+            color: #2d3436;
+        }
+
+        .full-width { grid-column: span 2; border-bottom: none; }
+
+        /* Assessment Content Box */
+        .report-box {
+            background: #fafafa;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        /* Attachments */
+        .attachment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .img-thumbnail {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            transition: 0.3s;
+        }
+        .img-thumbnail:hover { transform: scale(1.02); border-color: var(--primary-green); }
+
+        .doc-download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-decoration: none;
+            color: var(--dark-green);
+            font-weight: bold;
+            height: 140px;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .doc-download-btn:hover { background-color: #f8fff9; border-color: var(--primary-green); }
+
+        /* Actions */
+        .action-card {
+            margin-top: 40px;
+            padding: 30px;
+            border-radius: 10px;
             text-align: center;
         }
-        h3 {
-            color: var(--dark-green);
-            border-bottom: 1px dashed var(--primary-green);
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-        }
-        .detail-item {
-            margin-bottom: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-        }
-        .detail-item strong {
-            display: inline-block;
-            min-width: 160px;
-            font-weight: 600;
-            color: #555;
-            margin-right: 10px;
-        }
-        .status-display {
+        .pending-box { background-color: #fff9f0; border: 1px solid #ffeaa7; }
+        .approved-box { background-color: #ebfaef; border: 1px solid #b2ebc2; color: #155724; }
+
+        .btn-approve {
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
             font-weight: bold;
-            color: var(--primary-green);
-            background-color: var(--light-green);
-            padding: 4px 8px;
-            border-radius: 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .report-section {
-            margin-top: 30px;
-            border: 1px solid var(--primary-green);
-            background-color: var(--light-green);
-            border-radius: 8px;
-            padding: 20px;
-        }
+        .btn-approve:hover { background-color: var(--dark-green); transform: translateY(-2px); }
+
         .back-link {
             display: inline-block;
             margin-top: 30px;
             color: var(--primary-green);
             text-decoration: none;
-            font-weight: bold;
-            padding: 10px 15px;
-            border: 1px solid var(--primary-green);
-            border-radius: 6px;
-            transition: background-color 0.2s, color 0.2s;
+            font-weight: 600;
         }
-        .back-link:hover {
-            background-color: var(--primary-green);
-            color: var(--white);
-            text-decoration: none;
-        }
-        .report-image {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin-top: 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-        }
-        .attachment-box {
-            background-color: var(--white);
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            margin-top: 10px;
-        }
-        .attachment-item {
-            margin-bottom: 15px;
-        }
-        .financial-section {
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        .file-link {
-            color: #1976d2;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .file-link:hover {
-            text-decoration: underline;
-        }
+        .back-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Financial Review - Report Details</h2>
-
-    <!-- Complaint Information -->
-    <h3>Complaint Information</h3>
-    <div class="detail-item">
-        <strong>Complaint ID:</strong>
-        <span th:text="${report.complaint.id}">1</span>
+    <div class="header-flex">
+        <h2>Financial Review</h2>
+        <span th:class="'badge status-' + ${report.complaint.status}"
+              th:text="${#strings.replace(report.complaint.status, '_', ' ')}">
+            STATUS
+        </span>
     </div>
 
-    <div class="detail-item">
-        <strong>Complaint Title:</strong>
-        <span th:text="${report.complaint.title}">Complaint Title</span>
+    <div class="section-title">Complaint Overview</div>
+    <div class="detail-card">
+        <div class="info-item">
+            <label>Complaint Reference</label>
+            <span th:text="'COMP-' + ${report.complaint.id}">COMP-1</span>
+        </div>
+        <div class="info-item">
+            <label>Category / Type</label>
+            <span th:text="${report.complaint.type}">CIVIL</span>
+        </div>
+        <div class="info-item full-width">
+            <label>Description of Issue</label>
+            <span th:text="${report.complaint.description}">Description text goes here...</span>
+        </div>
     </div>
 
-    <div class="detail-item">
-        <strong>Complaint Type:</strong>
-        <span th:text="${#strings.replace(report.complaint.type, '_', ' ')}">CIVIL</span>
-    </div>
-
-    <div class="detail-item" style="display: block;">
-        <strong>Description:</strong>
-        <p th:text="${report.complaint.description}" style="margin-top: 5px; padding-left: 10px;"></p>
-    </div>
-
-    <!-- Inspection Report Section -->
-    <div class="report-section">
-        <h3>Inspection Report</h3>
-
-        <div class="detail-item">
-            <strong>Inspected By:</strong>
-            <span th:text="${report.subEngineer.name}">John Smith</span>
+    <div class="section-title">Technical Inspection Findings</div>
+    <div class="report-box">
+        <div class="detail-card">
+            <div class="info-item">
+                <label>Sub-Engineer In-Charge</label>
+                <span th:text="${report.subEngineer.name}">John Doe</span>
+            </div>
+            <div class="info-item">
+                <label>Inspection Timestamp</label>
+                <span th:text="${#temporals.format(report.inspectionDate, 'dd MMM yyyy, HH:mm')}">Date</span>
+            </div>
         </div>
 
-        <div class="detail-item">
-            <strong>Inspection Date:</strong>
-            <span th:text="${#temporals.format(report.inspectionDate, 'yyyy-MM-dd HH:mm')}">2025-10-13 10:00</span>
+        <div style="margin-top: 20px;">
+            <label style="color: var(--text-muted); font-size: 0.85em; font-weight: 600;">TECHNICAL ASSESSMENT DETAILS:</label>
+            <p style="margin-top: 5px; color: #444;" th:text="${report.details}"></p>
         </div>
 
-        <div class="detail-item" style="display: block;">
-            <strong>Report Details:</strong>
-            <p th:text="${report.details}" style="margin-top: 5px; padding-left: 10px;"></p>
-        </div>
+        <div th:if="${reportFiles != null and not #arrays.isEmpty(reportFiles)}" style="margin-top: 25px;">
+            <label style="color: var(--text-muted); font-size: 0.85em; font-weight: 600;">ATTACHED PROOFS (CLICK TO DOWNLOAD):</label>
+            <div class="attachment-grid">
+                <div th:each="fileName : ${reportFiles}">
+                    <a th:if="${FileMimeUtil.isImage(fileName)}"
+                       th:href="@{/images/{f}(f=${fileName})}"
+                       th:download="${fileName}"
+                       target="_blank">
+                        <img th:src="@{/images/{f}(f=${fileName})}" class="img-thumbnail" th:title="'Download ' + ${fileName}"/>
+                    </a>
 
-        <!-- File Attachments -->
-        <div th:if="${reportFiles != null and not #arrays.isEmpty(reportFiles)}">
-            <h4>File Attachments:</h4>
-            <div class="attachment-box">
-                <div th:each="fileName : ${reportFiles}" th:if="${not #strings.isEmpty(fileName)}" class="attachment-item">
-                    <!-- Use /images/ path for file access -->
-                    <div th:with="fileUrl=@{/images/{fileName}(fileName=${fileName})}">
-                        <span th:if="${FileMimeUtil.isImage(fileName)}">
-                            <strong>Image: </strong>
-                            <a th:href="${fileUrl}" th:text="${fileName}" class="file-link" target="_blank"></a>
-                            <img th:src="${fileUrl}" class="report-image" th:alt="'Inspection Image: ' + ${fileName}"/>
-                        </span>
-
-                        <span th:unless="${FileMimeUtil.isImage(fileName)}">
-                            <strong>Document: </strong>
-                            <a th:href="${fileUrl}" th:text="${fileName}" class="file-link" target="_blank"></a>
-                            <p style="font-size: 0.9em; color: #777; margin-top: 5px;">(Document will open in a new tab or download automatically.)</p>
-                        </span>
-                    </div>
+                    <a th:unless="${FileMimeUtil.isImage(fileName)}"
+                       th:href="@{/images/{f}(f=${fileName})}"
+                       th:download="${fileName}"
+                       class="doc-download-btn">
+                        <div>
+                            <span style="font-size: 2em; display:block;">📄</span>
+                            <small th:text="${fileName}" style="display:block; margin-top:5px; word-break: break-all;"></small>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <a th:href="@{/finance/reports}" class="back-link">← Back to Financial Reports</a>
+    <div th:if="${report.complaint.status == T(com.UOK.engineeringDeptComplaintApp.model.ComplaintStatus).FORWARDED_TO_FINANCE}"
+         class="action-card pending-box">
+        <h3>Budget Approval Required</h3>
+        <p>By clicking below, you confirm that the financial allocation for this maintenance work is verified and released.</p>
+        <form th:action="@{/finance/report/approve/{id}(id=${report.id})}" method="post">
+            <button type="submit" class="btn-approve">AUTHORIZE & RELEASE FUNDS</button>
+        </form>
+    </div>
+
+    <div th:if="${report.complaint.status == T(com.UOK.engineeringDeptComplaintApp.model.ComplaintStatus).APPROVED}"
+         class="action-card approved-box">
+        <h3>✔ Financial Clearance Granted</h3>
+        <p>This report has been approved. The execution team has been notified to proceed with the work.</p>
+    </div>
+
+    <a th:href="@{/finance/reports}" class="back-link">← Return to Financial Dashboard</a>
 </div>
 
 </body>

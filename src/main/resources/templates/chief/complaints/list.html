@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Chief Engineer Dashboard</title>
+    <title>Chief Engineer Dashboard | UOK Engineering</title>
     <style>
-        /* Professional Green/White Theme Variables */
+        /* Synchronized Professional Green/White Theme */
         :root {
             --primary-green: #28a745;
-            --light-green: #f7fff8;      /* Very light green background for container */
             --dark-green: #1e7e34;
-            --light-bg: #e6ffe9;        /* Light page background */
+            --light-bg: #e6ffe9;
             --text-color: #333;
             --white: #ffffff;
             --border-color: #ced4da;
-            --secondary-bg: #f2f2f2;    /* For alternate row color */
-            --logout-red: #dc3545;      /* Red color for logout button */
-            --logout-red-dark: #c82333; /* Darker red for hover state */
+            --secondary-bg: #f2f2f2;
+            --logout-red: #dc3545;
+            --logout-red-dark: #c82333;
         }
 
         body {
@@ -26,13 +25,13 @@
         }
 
         .container {
-            max-width: 1200px; /* Wider container for the comprehensive table */
+            max-width: 1300px;
             margin: 0 auto;
             background-color: var(--white);
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: relative; /* For positioning the logout button */
+            position: relative;
         }
 
         h2 {
@@ -43,39 +42,107 @@
             text-align: center;
         }
 
-        /* Logout Button Styling */
-        .logout-container {
+        /* Filter Section Styling */
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--dark-green);
+            text-transform: uppercase;
+        }
+
+        .filter-input {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 200px;
+            outline: none;
+        }
+
+        .filter-input:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.2);
+        }
+
+        /* Top Navigation Container */
+        .top-nav {
             position: absolute;
             top: 30px;
             right: 30px;
+            display: flex;
+            gap: 10px;
         }
 
-        .logout-btn {
-            background-color: var(--logout-red);
-            color: white;
-            border: none;
+        .btn-base {
             padding: 10px 20px;
             border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-            transition: background-color 0.2s ease;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', sans-serif;
             font-size: 14px;
+            border: 1px solid var(--primary-green);
+            background-color: var(--white);
+            color: var(--primary-green);
+        }
+
+        .btn-base:hover {
+            background-color: var(--primary-green);
+            color: var(--white);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit {
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+        }
+
+        .btn-reset {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background-color: #5a6268;
+        }
+
+        .logout-btn {
+            border: 1px solid var(--logout-red);
+            color: var(--logout-red);
         }
 
         .logout-btn:hover {
-            background-color: var(--logout-red-dark);
-            text-decoration: none;
+            background-color: var(--logout-red);
             color: white;
+            border-color: var(--logout-red);
         }
 
         /* Table Styling */
         table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            border-collapse: collapse;
             margin-top: 20px;
             border-radius: 8px;
             overflow: hidden;
@@ -89,23 +156,10 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        /* Table Header (Green theme) */
         thead tr {
             background-color: var(--primary-green);
             color: white;
             font-weight: 600;
-        }
-
-        th:first-child { border-top-left-radius: 8px; }
-        th:last-child { border-top-right-radius: 8px; }
-
-        /* Table Body Rows */
-        tbody tr {
-            transition: background-color 0.2s ease;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
         }
 
         tbody tr:nth-child(even) {
@@ -113,51 +167,99 @@
         }
 
         tbody tr:hover {
-            background-color: #e9f5ed; /* Light green hover effect */
+            background-color: #e9f5ed;
         }
 
-        /* Action Link Styling */
-        a {
+        /* Status Badge Styling */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        .status-REGISTERED { background-color: #cfe2ff; color: #084298; }
+        .status-FORWARDED_TO_SUB_ENGINEER { background-color: #e0cffc; color: #350a4e; }
+        .status-INSPECTION_DONE { background-color: #fff3cd; color: #664d03; }
+        .status-FORWARDED_TO_FINANCE { background-color: #ffe5d0; color: #854000; }
+        .status-APPROVED { background-color: #d1e7dd; color: #0f5132; }
+
+        .action-link {
             text-decoration: none;
             color: var(--primary-green);
             font-weight: 600;
-            transition: color 0.2s;
+            padding: 8px 16px;
+            border: 1px solid var(--primary-green);
+            border-radius: 4px;
+            display: inline-block;
+            transition: 0.2s;
         }
 
-        a:hover {
-            text-decoration: underline;
-            color: var(--dark-green);
+        .action-link:hover {
+            background-color: var(--primary-green);
+            color: var(--white);
+            text-decoration: none;
         }
 
-        p.empty-message {
+        .empty-message {
             color: #555;
             text-align: center;
-            padding: 20px;
-            background-color: var(--light-green);
+            padding: 40px;
+            background-color: #f8f9fa;
             border-radius: 6px;
-            border: 1px solid var(--primary-green);
+            border: 1px dashed var(--primary-green);
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Logout Button - Using POST method for CSRF protection -->
-    <div class="logout-container">
+
+    <div class="top-nav">
         <form th:action="@{/logout}" method="post" style="display: inline;">
-            <button type="submit" class="logout-btn">Logout</button>
+            <button type="submit" class="btn-base logout-btn">Logout</button>
         </form>
     </div>
 
     <h2>Chief Engineer Dashboard: All Complaints</h2>
 
-    <p th:if="${complaints.isEmpty()}" class="empty-message">No complaints have been registered yet.</p>
+    <form th:action="@{/complaints/chief}" method="get" class="filter-section">
+        <div class="filter-group">
+            <label>Complaint Title</label>
+            <input type="text" name="title" th:value="${selectedTitle}" class="filter-input" placeholder="Search by title...">
+        </div>
 
-    <table th:if="${!complaints.isEmpty()}">
+        <div class="filter-group">
+            <label>Department</label>
+            <input type="text" name="dept" th:value="${selectedDept}" class="filter-input" placeholder="Search by department...">
+        </div>
+
+        <div class="filter-group">
+            <label>Status</label>
+            <select name="status" class="filter-input">
+                <option value="">-- All Statuses --</option>
+                <option th:each="s : ${T(com.UOK.engineeringDeptComplaintApp.model.ComplaintStatus).values()}"
+                        th:value="${s}"
+                        th:text="${#strings.replace(s, '_', ' ')}"
+                        th:selected="${s.toString() == selectedStatus}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-base btn-submit">Apply Filters</button>
+        <a th:href="@{/complaints/chief}" class="btn-base btn-reset">Reset</a>
+    </form>
+
+    <p th:if="${complaints == null or complaints.isEmpty()}" class="empty-message">
+        No complaints matching your search criteria were found.
+    </p>
+
+    <table th:if="${complaints != null and not complaints.isEmpty()}">
         <thead>
         <tr>
             <th>ID</th>
-            <th>Title</th>
+            <th>Complaint Title</th>
             <th>Department</th>
             <th>Status</th>
             <th>Registered On</th>
@@ -166,18 +268,21 @@
         </thead>
         <tbody>
         <tr th:each="complaint : ${complaints}">
-            <td th:text="${complaint.id}">1</td>
-            <td th:text="${complaint.title}">Faulty Lab Equipment</td>
+            <td th:text="'COMP-' + ${complaint.id}">COMP-1</td>
+            <td th:text="${complaint.title}" style="font-weight: 500;">Title</td>
             <td>
-                <!-- Ensure Department name is displayed clearly -->
-                <span th:if="${complaint.department != null}" th:text="${complaint.department.name}">Electrical Engineering</span>
-                <span th:if="${complaint.department == null}">N/A</span>
+                <span th:if="${complaint.department != null}" th:text="${complaint.department.name}">Department</span>
+                <span th:if="${complaint.department == null}" style="color: #999;">N/A</span>
             </td>
-            <!-- FIX: Replaces underscores with spaces for readability -->
-            <td th:text="${#strings.replace(complaint.status, '_', ' ')}">REGISTERED</td>
-            <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}">2025-09-21 03:00</td>
             <td>
-                <a th:href="@{/complaints/chief/{id}(id=${complaint.id})}">View Details</a>
+                <span th:class="'badge status-' + ${complaint.status}"
+                      th:text="${#strings.replace(complaint.status, '_', ' ')}">REGISTERED</span>
+            </td>
+            <td th:text="${#temporals.format(complaint.dateRegistered, 'dd MMM yyyy, HH:mm')}">Date</td>
+            <td>
+                <a th:href="@{/complaints/chief/{id}(id=${complaint.id})}" class="action-link">
+                    View Details
+                </a>
             </td>
         </tr>
         </tbody>

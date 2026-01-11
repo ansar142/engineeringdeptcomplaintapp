@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Finance Department - Reports</title>
+    <title>Finance Department - History</title>
     <style>
-        /* Professional Green/White Theme - Synchronized */
+        /* Professional Green/White Theme - EXACT MATCH TO REPORTS.HTML */
         :root {
             --primary-green: #28a745;
             --light-green: #f7fff8;
@@ -13,6 +13,8 @@
             --white: #ffffff;
             --border-color: #ced4da;
             --secondary-bg: #f2f2f2;
+            --logout-red: #dc3545;
+            --logout-red-dark: #c82333;
         }
 
         body {
@@ -41,7 +43,7 @@
             text-align: center;
         }
 
-        /* Top Header Navigation - Now All Green */
+        /* Top Navigation Container */
         .top-nav {
             position: absolute;
             top: 30px;
@@ -60,33 +62,75 @@
             transition: all 0.2s ease;
             font-family: 'Segoe UI', sans-serif;
             font-size: 14px;
-            border: 1px solid var(--primary-green); /* Green border */
-            background-color: var(--white);
-            color: var(--primary-green);
+            border: none;
         }
 
-        /* Hover state for nav buttons matches the active action style */
-        .btn-base:hover {
+        .back-btn {
             background-color: var(--primary-green);
-            color: var(--white);
+            color: white;
+        }
+
+        .back-btn:hover {
+            background-color: var(--dark-green);
             transform: translateY(-1px);
         }
 
-        /* Active Green style for primary navigation */
-        .btn-primary-nav {
+        /* Search Section Styling */
+        .search-box {
+            background-color: var(--light-green);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--primary-green);
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .search-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark-green);
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .btn-filter {
             background-color: var(--primary-green);
-            color: var(--white);
+            color: white;
+            border: none;
+            padding: 9px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
-        .btn-primary-nav:hover {
-            background-color: var(--dark-green);
+        .btn-reset {
+            background-color: #6c757d;
+            color: white;
+            padding: 9px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
         }
 
-        /* Table Styling */
+        /* Table Styling - Matched to reports.html */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 10px;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -113,6 +157,12 @@
             background-color: #e9f5ed;
         }
 
+        .status-badge {
+            color: var(--primary-green);
+            font-weight: 700;
+            font-size: 13px;
+        }
+
         .action-link {
             text-decoration: none;
             color: var(--primary-green);
@@ -136,7 +186,6 @@
             background-color: var(--light-green);
             border-radius: 6px;
             border: 1px dashed var(--primary-green);
-            margin-top: 20px;
         }
     </style>
 </head>
@@ -145,41 +194,50 @@
 <div class="container">
 
     <div class="top-nav">
-        <a th:href="@{/finance/history}" class="btn-base btn-primary-nav">
-            📂 View History
+        <a th:href="@{/finance/reports}" class="btn-base back-btn">
+            ← Active Dashboard
         </a>
-
-        <form th:action="@{/logout}" method="post" style="display: inline;">
-            <button type="submit" class="btn-base">Logout</button>
-        </form>
     </div>
 
-    <h2>Finance Department - Reports for Financial Review</h2>
+    <h2>Financial Approval Archive</h2>
 
-    <p th:if="${reports == null or reports.isEmpty()}" class="empty-message">
-        No new reports awaiting financial review. Check the history for past records.
+    <form th:action="@{/finance/history}" method="get" class="search-box">
+        <div class="search-group">
+            <label>Department</label>
+            <input type="text" name="dept" th:value="${selectedDept}" class="search-input" placeholder="Search department...">
+        </div>
+        <div class="search-group">
+            <label>Date of Approval</label>
+            <input type="date" name="date" th:value="${selectedDate}" class="search-input">
+        </div>
+        <button type="submit" class="btn-filter">Apply Filters</button>
+        <a th:href="@{/finance/history}" class="btn-reset">Reset</a>
+    </form>
+
+    <p th:if="${history == null or history.isEmpty()}" class="empty-message">
+        No archived records found. Try adjusting your filters.
     </p>
 
-    <table th:if="${reports != null and not reports.isEmpty()}">
+    <table th:if="${history != null and not history.isEmpty()}">
         <thead>
         <tr>
             <th>Report ID</th>
             <th>Complaint Title</th>
-            <th>Complaint Type</th>
-            <th>Submitted By</th>
-            <th>Inspection Date</th>
+            <th>Department</th>
+            <th>Approved Date</th>
+            <th>Status</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="report : ${reports}">
+        <tr th:each="report : ${history}">
             <td th:text="${report.id}">1</td>
             <td th:text="${report.complaint.title}">Plumbing Issue</td>
-            <td th:text="${#strings.replace(report.complaint.type, '_', ' ')}">CIVIL</td>
-            <td th:text="${report.subEngineer.name}">John Smith</td>
-            <td th:text="${#temporals.format(report.inspectionDate, 'dd MMM yyyy HH:mm')}">Date</td>
+            <td th:text="${report.complaint.department.name}">Registrar</td>
+            <td th:text="${#temporals.format(report.inspectionDate, 'dd-MM-yyyy')}">2025-10-13</td>
+            <td><span class="status-badge">APPROVED</span></td>
             <td>
-                <a th:href="@{/finance/report/{id}(id=${report.id})}" class="action-link">Review Report</a>
+                <a th:href="@{/finance/report/{id}(id=${report.id})}" class="action-link">View Details</a>
             </td>
         </tr>
         </tbody>

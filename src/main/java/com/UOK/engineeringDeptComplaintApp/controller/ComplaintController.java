@@ -170,6 +170,26 @@ public class ComplaintController {
         return "complaints/success";
     }
 
+    @GetMapping("/chief")
+    public String showChiefDashboard(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String dept,
+            @RequestParam(required = false) String status,
+            Model model) {
+
+        // Call the new filtered service method
+        List<Complaint> complaints = complaintService.getFilteredComplaints(title, dept, status);
+
+        model.addAttribute("complaints", complaints);
+
+        // Keep the search values in the input boxes after the page reloads
+        model.addAttribute("selectedTitle", title);
+        model.addAttribute("selectedDept", dept);
+        model.addAttribute("selectedStatus", status);
+
+        return "chief/complaints/list"; // Ensure this matches your HTML file path
+    }
+
     // All your other methods remain the same...
     @GetMapping("/chief/{id}")
     public String chiefViewComplaintDetail(@PathVariable Long id, Model model) {

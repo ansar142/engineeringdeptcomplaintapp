@@ -5,6 +5,7 @@ import com.UOK.engineeringDeptComplaintApp.repository.ComplaintRepository;
 import com.UOK.engineeringDeptComplaintApp.repository.SubEngineerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,24 @@ public class ComplaintService {
 
     public List<Complaint> getComplaintsByDepartmentId(Long departmentId) {
         return complaintRepository.findByDepartmentId(departmentId);
+    }
+
+
+
+// ... inside ComplaintService class ...
+
+    public List<Complaint> getFilteredComplaints(String title, String dept, String status) {
+        List<Complaint> allComplaints = complaintRepository.findAll();
+
+        return allComplaints.stream()
+                .filter(c -> (title == null || title.isEmpty() ||
+                        c.getTitle().toLowerCase().contains(title.toLowerCase())))
+                .filter(c -> (dept == null || dept.isEmpty() ||
+                        (c.getDepartment() != null && c.getDepartment().getName().toLowerCase().contains(dept.toLowerCase()))))
+                .filter(c -> (status == null || status.isEmpty() ||
+                        c.getStatus().toString().equals(status)))
+                .sorted((c1, c2) -> c2.getDateRegistered().compareTo(c1.getDateRegistered())) // Show newest first
+                .collect(Collectors.toList());
     }
 
     // Chief Engineer: Delegate a complaint to a Sub-Engineer

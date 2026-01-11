@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,13 +31,33 @@ public class FinanceController {
     }
 
     // Displays a list of all reports that have been forwarded to Finance
+
     @GetMapping("/reports")
     public String viewForwardedReports(Model model) {
-        List<Report> forwardedReports = financeService.getAllForwardedReports();
-        model.addAttribute("reports", forwardedReports);
+        // Reports needing action
+        List<Report> pending = financeService.getAllForwardedReports();
+        // Reports already approved
+        List<Report> approved = financeService.getAllApprovedReports();
+
+        model.addAttribute("reports", pending);
+        model.addAttribute("approvedReports", approved);
         return "finance/reports";
     }
+    @GetMapping("/history")
+    public String viewFinanceHistory(
+            @RequestParam(value = "dept", required = false) String dept,
+            @RequestParam(value = "date", required = false) String date,
+            Model model) {
 
+        // Use the service to get approved reports (filtered or unfiltered)
+        List<Report> history = financeService.searchApprovedReports(dept, date);
+
+        model.addAttribute("history", history);
+        model.addAttribute("selectedDept", dept);
+        model.addAttribute("selectedDate", date);
+
+        return "finance/history"; // This points to history.html
+    }
     // View detailed report
     @GetMapping("/report/{id}")
     public String viewReportDetails(@PathVariable Long id, Model model) {
@@ -77,4 +95,15 @@ public class FinanceController {
 
         return "finance/report-details";
     }
-}
+    @PostMapping("/report/approve/{id}")
+    public String approveReport(@PathVariable Long id) {
+        try {
+            financeService.approveReport(id);
+            // Redirect back to the SAME detail page, just like the Chief Engineer controller does
+            return "redirect:/finance/report/" + id + "?success=true";
+        } catch (Exception e) {
+            // This prevents the 500 error page and shows you the error in logs
+            e.printStackTrace();
+            return "redirect:/finance/report/" + id + "?error=processing_failed";
+        }
+}}
