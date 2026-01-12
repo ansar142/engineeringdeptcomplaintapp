@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Department Complaints</title>
+    <title>Department Portal | UOK Engineering</title>
     <style>
-        /* Professional Green/White Theme Variables */
+        /* Synchronized Professional Green/White Theme */
         :root {
             --primary-green: #28a745;
-            --light-green: #f7fff8;      /* Very light green background for container */
             --dark-green: #1e7e34;
-            --light-bg: #e6ffe9;        /* Light page background */
+            --light-bg: #e6ffe9;
             --text-color: #333;
             --white: #ffffff;
             --border-color: #ced4da;
-            --secondary-bg: #f2f2f2;    /* For alternate row color */
-            --link-color: #007bff;      /* Keeping a standard link color for contrast, though green is used for header */
+            --secondary-bg: #f2f2f2;
+            --logout-red: #dc3545;
+            --logout-red-dark: #c82333;
+            --complete-blue: #007bff;
         }
 
         body {
@@ -25,12 +26,13 @@
         }
 
         .container {
-            max-width: 1000px; /* Wider container for the table */
+            max-width: 1300px;
             margin: 0 auto;
             background-color: var(--white);
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         h2 {
@@ -41,98 +43,230 @@
             text-align: center;
         }
 
+        /* Filter Section Styling */
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--dark-green);
+            text-transform: uppercase;
+        }
+
+        .filter-input {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 200px;
+            outline: none;
+        }
+
+        /* Top Navigation Container */
+        .top-nav {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-base {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            border: 1px solid var(--primary-green);
+            background-color: var(--white);
+            color: var(--primary-green);
+        }
+
+        .btn-base:hover {
+            background-color: var(--primary-green);
+            color: var(--white);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit { background-color: var(--primary-green); color: white; border: none; }
+        .btn-reset { background-color: #6c757d; border-color: #6c757d; color: white; }
+        .btn-reset:hover { background-color: #5a6268; }
+
+        .btn-new { background-color: var(--primary-green); color: white; border: none; }
+
+        .logout-btn { border: 1px solid var(--logout-red); color: var(--logout-red); }
+        .logout-btn:hover { background-color: var(--logout-red); color: white; }
+
         /* Table Styling */
         table {
             width: 100%;
-            border-collapse: separate; /* Use separate for rounded corners */
-            border-spacing: 0;
+            border-collapse: collapse;
             margin-top: 20px;
-            border-radius: 8px; /* Rounded corners for the table */
-            overflow: hidden; /* Ensures borders/shadows respect radius */
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
             background-color: var(--white);
         }
 
         th, td {
             padding: 15px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color); /* Light border */
+            border-bottom: 1px solid var(--border-color);
         }
 
-        /* Table Header (Green theme) */
-        thead tr {
-            background-color: var(--primary-green);
-            color: white;
+        thead tr { background-color: var(--primary-green); color: white; }
+        tbody tr:nth-child(even) { background-color: var(--secondary-bg); }
+        tbody tr:hover { background-color: #e9f5ed; }
+
+        /* Status Badge Styling */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
         }
+        .status-REGISTERED { background-color: #cfe2ff; color: #084298; }
+        .status-FORWARDED_TO_SUB_ENGINEER { background-color: #e0cffc; color: #350a4e; }
+        .status-INSPECTION_DONE { background-color: #fff3cd; color: #664d03; }
+        .status-FORWARDED_TO_FINANCE { background-color: #ffe5d0; color: #854000; }
+        .status-APPROVED { background-color: #d1e7dd; color: #0f5132; }
+        .status-COMPLETED { background-color: #004d40; color: #ffffff; }
 
-        th:first-child { border-top-left-radius: 8px; }
-        th:last-child { border-top-right-radius: 8px; }
-
-        /* Table Body Rows */
-        tbody tr {
-            transition: background-color 0.2s ease;
-        }
-
-        tbody tr:last-child td {
-             border-bottom: none; /* Remove bottom border on last row */
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: var(--secondary-bg);
-        }
-
-        tbody tr:hover {
-            background-color: #e9f5ed; /* Light green hover effect */
-        }
-
-        /* Action Link Styling */
-        a {
-            text-decoration: none;
-            color: var(--primary-green); /* Link color matches primary theme */
+        /* Action Buttons */
+        .btn-complete {
+            background-color: var(--white);
+            color: var(--complete-blue);
+            border: 1px solid var(--complete-blue);
+            padding: 8px 16px;
+            border-radius: 4px;
             font-weight: 600;
-            transition: color 0.2s;
+            cursor: pointer;
+            transition: 0.2s;
         }
 
-        a:hover {
-            text-decoration: underline;
+        .btn-complete:hover {
+            background-color: var(--complete-blue);
+            color: var(--white);
+        }
+
+        .text-finished {
             color: var(--dark-green);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        p.empty-message {
+        .text-wait {
+            color: #999;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        .empty-message {
             color: #555;
             text-align: center;
-            padding: 20px;
-            background-color: var(--light-green);
+            padding: 40px;
+            background-color: #f8f9fa;
             border-radius: 6px;
-            border: 1px solid var(--primary-green);
+            border: 1px dashed var(--primary-green);
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Department Complaints</h2>
 
-    <p th:if="${complaints.isEmpty()}" class="empty-message">No complaints have been registered for this department.</p>
+    <div class="top-nav">
+        <a th:href="@{/complaints/register}" class="btn-base btn-new">+ New Complaint</a>
 
-    <table th:if="${!complaints.isEmpty()}">
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="btn-base logout-btn">Logout</button>
+        </form>
+    </div>
+
+    <h2>My Departmental Complaints</h2>
+
+    <form th:action="@{'/complaints/department/' + ${departmentId}}" method="get" class="filter-section">
+        <div class="filter-group">
+            <label>Complaint Title</label>
+            <input type="text" name="title" th:value="${selectedTitle}" class="filter-input" placeholder="Search by title...">
+        </div>
+
+        <div class="filter-group">
+            <label>Status</label>
+            <select name="status" class="filter-input">
+                <option value="">-- All Statuses --</option>
+                <option th:each="s : ${T(com.UOK.engineeringDeptComplaintApp.model.ComplaintStatus).values()}"
+                        th:value="${s}"
+                        th:text="${#strings.replace(s, '_', ' ')}"
+                        th:selected="${s.toString() == selectedStatus}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-base btn-submit">Apply Filters</button>
+        <a th:href="@{'/complaints/department/' + ${departmentId}}" class="btn-base btn-reset">Reset</a>
+    </form>
+
+    <p th:if="${complaints == null or complaints.isEmpty()}" class="empty-message">
+        No complaints registered for your department yet.
+    </p>
+
+    <table th:if="${complaints != null and not complaints.isEmpty()}">
         <thead>
         <tr>
             <th>ID</th>
-            <th>Title</th>
+            <th>Complaint Title</th>
             <th>Status</th>
             <th>Registered On</th>
-            <th>Actions</th>
+            <th>Department Actions</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="complaint : ${complaints}">
-            <td th:text="${complaint.id}">1</td>
-            <td th:text="${complaint.title}">Faulty Lab Equipment</td>
-            <td th:text="${complaint.status}">REGISTERED</td>
-            <td th:text="${#temporals.format(complaint.dateRegistered, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="'COMP-' + ${complaint.id}" style="font-weight: bold;">COMP-1</td>
+            <td th:text="${complaint.title}" style="font-weight: 500;">Title</td>
             <td>
-                <a th:href="@{/complaints/department/detail/{id}(id=${complaint.id})}">View Details</a>
+                <span th:class="'badge status-' + ${complaint.status}"
+                      th:text="${#strings.replace(complaint.status, '_', ' ')}">STATUS</span>
+            </td>
+            <td th:text="${#temporals.format(complaint.dateRegistered, 'dd MMM yyyy, HH:mm')}">Date</td>
+            <td>
+                <form th:if="${complaint.status.name() == 'APPROVED'}"
+                      th:action="@{'/complaints/department/complete/' + ${complaint.id}}" method="post">
+                    <input type="hidden" name="departmentId" th:value="${departmentId}" />
+                    <button type="submit" class="btn-complete">Mark Completed</button>
+                </form>
+
+                <span th:if="${complaint.status.name() == 'COMPLETED'}" class="text-finished">
+                    Finished ✅
+                </span>
+
+                <span th:if="${complaint.status.name() != 'APPROVED' and complaint.status.name() != 'COMPLETED'}" class="text-wait">
+                    Awaiting Approval...
+                </span>
             </td>
         </tr>
         </tbody>

@@ -123,6 +123,29 @@ public class ComplaintController {
         this.userService = userService; // Initialize
     }
 
+    @GetMapping("/department/{departmentId}")
+    public String viewDepartmentComplaints(
+            @PathVariable Long departmentId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String status,
+            Model model) {
+
+        List<Complaint> complaints = complaintService.getFilteredDepartmentComplaints(departmentId, title, status);
+
+        model.addAttribute("complaints", complaints);
+        model.addAttribute("departmentId", departmentId);
+        model.addAttribute("selectedTitle", title);
+        model.addAttribute("selectedStatus", status);
+
+        return "complaints/list";
+    }
+
+    @PostMapping("/department/complete/{id}")
+    public String completeComplaint(@PathVariable Long id, @RequestParam Long departmentId) {
+        complaintService.markAsCompleted(id);
+        return "redirect:/complaints/department/" + departmentId;
+    }
+
     // Displays the complaint registration form (for a Department user)
     @GetMapping("/register")
     public String showRegistrationForm(Model model, Authentication authentication) {
@@ -215,6 +238,7 @@ public class ComplaintController {
         complaintService.forwardToFinance(complaintId);
         return "redirect:/complaints/chief/" + complaintId;
     }
+/*
 
     @GetMapping("/department/{departmentId}")
     public String viewDepartmentComplaints(@PathVariable Long departmentId, Model model) {
@@ -222,6 +246,7 @@ public class ComplaintController {
         model.addAttribute("complaints", complaints);
         return "complaints/list";
     }
+*/
 
     @GetMapping("/success")
     public String showSuccessPage(Model model, Authentication authentication) {

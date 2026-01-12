@@ -22,6 +22,23 @@ public class ComplaintService {
         this.subEngineerRepository = subEngineerRepository;
     }
 
+    public List<Complaint> getFilteredDepartmentComplaints(Long deptId, String title, String status) {
+        List<Complaint> deptComplaints = complaintRepository.findByDepartmentId(deptId);
+
+        return deptComplaints.stream()
+                .filter(c -> (title == null || title.isEmpty() || c.getTitle().toLowerCase().contains(title.toLowerCase())))
+                .filter(c -> (status == null || status.isEmpty() || c.getStatus().name().equals(status)))
+                .sorted((c1, c2) -> c2.getDateRegistered().compareTo(c1.getDateRegistered()))
+                .collect(Collectors.toList());
+    }
+
+    public void markAsCompleted(Long complaintId) {
+        Complaint complaint = complaintRepository.findById(complaintId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
+        complaint.setStatus(ComplaintStatus.COMPLETED);
+        complaintRepository.save(complaint);
+    }
+
     // Department: Register a new complaint
     public Complaint registerComplaint(Complaint complaint) {
         complaint.setStatus(ComplaintStatus.REGISTERED);
