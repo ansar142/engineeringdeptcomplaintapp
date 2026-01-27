@@ -3,7 +3,7 @@
 <head>
     <title>Complaint Details | Chief Engineer</title>
     <style>
-        /* Professional Green/White Theme - Synchronized with Financial Portal */
+        /* Professional Green/White Theme - Synchronized */
         :root {
             --primary-green: #28a745;
             --dark-green: #1e7e34;
@@ -31,7 +31,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
-        /* Header Section */
         .header-flex {
             display: flex;
             justify-content: space-between;
@@ -57,7 +56,6 @@
         .status-FORWARDED_TO_FINANCE { background-color: #fd7e14; }
         .status-APPROVED { background-color: var(--primary-green); }
 
-        /* Section Styling */
         .section-title {
             font-size: 1.1em;
             font-weight: bold;
@@ -68,7 +66,6 @@
             margin: 30px 0 15px 0;
         }
 
-        /* Detail Grid for Alignment */
         .detail-card {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -98,7 +95,6 @@
 
         .full-width { grid-column: span 2; border-bottom: none; }
 
-        /* Action/Card Content Box */
         .report-box {
             background: #fafafa;
             border: 1px solid var(--border-color);
@@ -106,7 +102,6 @@
             border-radius: 8px;
         }
 
-        /* Forms & Buttons */
         .delegate-form {
             display: flex;
             gap: 10px;
@@ -135,7 +130,6 @@
 
         .btn-action:hover { background-color: var(--dark-green); transform: translateY(-1px); }
 
-        /* Attachments Grid */
         .attachment-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -211,7 +205,7 @@
     <div th:if="${complaint.subEngineer == null}">
         <div class="section-title">Assign Sub-Engineer</div>
         <div class="report-box">
-            <p style="margin-top:0; font-size: 0.9em; color: var(--text-muted);">Please select a technical officer to perform the inspection.</p>
+            <p style="margin-top:0; font-size: 0.9em; color: var(--text-muted);">Select a sub-engineer to investigate the issue.</p>
             <form th:action="@{/complaints/chief/delegate}" method="post" class="delegate-form">
                 <input type="hidden" name="complaintId" th:value="${complaint.id}" />
                 <select id="subEngineerId" name="subEngineerId">
@@ -246,12 +240,10 @@
                 <div class="attachment-grid">
                     <div th:each="filePath : ${#strings.arraySplit(complaint.report.imagePath, ',')}">
                         <span th:with="filename=${#strings.replace(filePath, '/images/', '')}, lowerFn=${#strings.toLowerCase(filePath)}">
-
                             <a th:if="${#strings.endsWith(lowerFn, '.jpg') or #strings.endsWith(lowerFn, '.jpeg') or #strings.endsWith(lowerFn, '.png')}"
                                th:href="@{${filePath}}" target="_blank">
                                 <img th:src="@{${filePath}}" class="img-thumbnail" />
                             </a>
-
                             <a th:unless="${#strings.endsWith(lowerFn, '.jpg') or #strings.endsWith(lowerFn, '.jpeg') or #strings.endsWith(lowerFn, '.png')}"
                                th:href="@{${filePath}}" download class="doc-download-btn">
                                 <div>
@@ -264,16 +256,32 @@
                 </div>
             </div>
 
-            <div th:if="${complaint.status.name() == 'INSPECTION_DONE'}" style="margin-top: 30px; text-align: right; border-top: 1px solid #eee; padding-top: 20px;">
+            <div th:if="${complaint.status.name() == 'INSPECTION_DONE'}"
+                 style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 15px; border-top: 1px solid #eee; padding-top: 20px;">
+
                 <form th:action="@{/complaints/chief/forward-to-finance}" method="post">
                     <input type="hidden" name="complaintId" th:value="${complaint.id}" />
-                    <button type="submit" class="btn-action" style="background-color: #fd7e14;">Forward to Finance for Budget Approval</button>
+                    <button type="submit" class="btn-action" style="background-color: #fd7e14;">
+                        Forward to Finance
+                    </button>
+                </form>
+
+                <form th:action="@{/complaints/chief/approve}" method="post">
+                    <input type="hidden" name="complaintId" th:value="${complaint.id}" />
+                    <button type="submit" class="btn-action">
+                        Approve Directly
+                    </button>
                 </form>
             </div>
 
-            <p th:if="${complaint.status.name() == 'FORWARDED_TO_FINANCE'}" style="color: #fd7e14; font-weight: bold; text-align: right; margin-top: 20px;">
-                ⏱ Forwarded to Finance
-            </p>
+            <div style="text-align: right; margin-top: 20px;">
+                <p th:if="${complaint.status.name() == 'FORWARDED_TO_FINANCE'}" style="color: #fd7e14; font-weight: bold;">
+                    ⏱ Forwarded to Finance (Waiting for Budget Approval)
+                </p>
+                <p th:if="${complaint.status.name() == 'APPROVED'}" style="color: var(--primary-green); font-weight: bold;">
+                    ✅ Approved for Execution
+                </p>
+            </div>
         </div>
     </div>
 
@@ -282,7 +290,7 @@
         <p style="color: var(--text-muted); font-style: italic;">Awaiting technical inspection report from the sub-engineer.</p>
     </div>
 
-    <a th:href="@{/chief}" class="back-link">← Return to Chief Engineer Dashboard</a>
+    <a th:href="@{/complaints/chief}" class="back-link">← Return to Chief Engineer Dashboard</a>
 </div>
 
 </body>

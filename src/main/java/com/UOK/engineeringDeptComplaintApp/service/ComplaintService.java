@@ -22,6 +22,20 @@ public class ComplaintService {
         this.subEngineerRepository = subEngineerRepository;
     }
 
+    // Chief Engineer: Direct Approval Bypass
+    public Complaint approveByChief(Long complaintId) {
+        Complaint complaint = complaintRepository.findById(complaintId)
+                .orElseThrow(() -> new IllegalArgumentException("Complaint not found"));
+
+        // Logic: Chief can only approve if it's not already in Finance or Completed
+        if (complaint.getStatus() == ComplaintStatus.INSPECTION_DONE ||
+                complaint.getStatus() == ComplaintStatus.VIEWED_BY_CHIEF) {
+            complaint.setStatus(ComplaintStatus.APPROVED);
+            return complaintRepository.save(complaint);
+        }
+        return complaint;
+    }
+
     public List<Complaint> getFilteredDepartmentComplaints(Long deptId, String title, String status) {
         List<Complaint> deptComplaints = complaintRepository.findByDepartmentId(deptId);
 

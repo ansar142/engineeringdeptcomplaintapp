@@ -193,6 +193,8 @@ public class ComplaintController {
         return "complaints/success";
     }
 
+
+
     @GetMapping("/chief")
     public String showChiefDashboard(
             @RequestParam(required = false) String title,
@@ -211,6 +213,12 @@ public class ComplaintController {
         model.addAttribute("selectedStatus", status);
 
         return "chief/complaints/list"; // Ensure this matches your HTML file path
+    }
+
+    @PostMapping("/chief/approve")
+    public String approveDirectly(@RequestParam("complaintId") Long complaintId) {
+        complaintService.approveByChief(complaintId);
+        return "redirect:/complaints/chief/" + complaintId;
     }
 
     // All your other methods remain the same...
